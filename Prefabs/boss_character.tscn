@@ -1,0 +1,28 @@
+[gd_scene load_steps=4 format=3 uid="uid://d03i2hjl2p5lb"]
+
+[ext_resource type="Texture2D" uid="uid://0fuuwx8llpxc" path="res://black_icon.svg" id="1_6nn80"]
+
+[sub_resource type="SceneReplicationConfig" id="SceneReplicationConfig_y6qcj"]
+properties/0/path = NodePath(".:position")
+properties/0/spawn = true
+properties/0/replication_mode = 1
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_csv47"]
+size = Vector2(126.308, 128)
+
+[node name="BossCharacter" type="CharacterBody2D"]
+
+[node name="Sprite2D" type="Sprite2D" parent="."]
+position = Vector2(0.5, 0)
+scale = Vector2(0.251953, 0.25)
+texture = ExtResource("1_6nn80")
+
+[node name="MultiplayerSynchronizer" type="MultiplayerSynchronizer" parent="."]
+replication_config = SubResource("SceneReplicationConfig_y6qcj")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+position = Vector2(-2.98023e-08, 0)
+scale = Vector2(1.0134, 1.00725)
+shape = SubResource("RectangleShape2D_csv47")
+one_way_collision_margin = 0.0
+debug_color = Color(1, 0.270588, 0.756863, 0.482353)

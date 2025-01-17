@@ -1,0 +1,28 @@
+[gd_scene load_steps=5 format=3 uid="uid://dcwuslljujpl4"]
+
+[ext_resource type="Script" path="res://Scripts/BasicCharacter.cs" id="1_2loaq"]
+[ext_resource type="Texture2D" uid="uid://du5mbljcvpvlm" path="res://icon.svg" id="2_namfe"]
+
+[sub_resource type="SceneReplicationConfig" id="SceneReplicationConfig_fe12w"]
+properties/0/path = NodePath(".:position")
+properties/0/spawn = true
+properties/0/replication_mode = 1
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_nhc3g"]
+size = Vector2(126.308, 128)
+
+[node name="BasicCharacter" type="CharacterBody2D"]
+script = ExtResource("1_2loaq")
+
+[node name="Sprite2D" type="Sprite2D" parent="."]
+texture = ExtResource("2_namfe")
+
+[node name="MultiplayerSynchronizer" type="MultiplayerSynchronizer" parent="."]
+replication_config = SubResource("SceneReplicationConfig_fe12w")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+position = Vector2(-2.98023e-08, 0)
+scale = Vector2(1.0134, 1.00725)
+shape = SubResource("RectangleShape2D_nhc3g")
+one_way_collision_margin = 0.0
+debug_color = Color(1, 0.270588, 0.756863, 0.482353)
