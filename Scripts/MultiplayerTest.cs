@@ -6,6 +6,8 @@ public partial class MultiplayerTest : Node2D
     private const int serverPort = 135;
     private ENetMultiplayerPeer peer = new ENetMultiplayerPeer();
     [Export] PackedScene playerScene;
+    [Export] BulletManager bulletManager;
+
 
     private System.Collections.Generic.Dictionary<int, Node2D> playerNodes = new System.Collections.Generic.Dictionary<int, Node2D>();
 
@@ -13,7 +15,6 @@ public partial class MultiplayerTest : Node2D
     {
         Multiplayer.PeerConnected += OnPeerConnected;
     }
-
     private void OnPeerConnected(long id)
     {
         GD.Print($"Peer connected: {id}");
@@ -71,6 +72,15 @@ public partial class MultiplayerTest : Node2D
         GD.Print($"_addPlayer called, id = {id}, Server = {Multiplayer.IsServer()}");
         
         Node2D player = playerScene.Instantiate() as Node2D;
+
+        if (player is BasicCharacter playerScript)
+        {
+           playerScript.PlayerFiredBullet += bulletManager.HandleBulletSpawned;
+        }
+        else
+        {
+            GD.PrintErr("Player script not found");
+        }
 
         if (player == null)
 		{

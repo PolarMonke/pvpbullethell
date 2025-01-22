@@ -1,11 +1,15 @@
-[gd_scene load_steps=3 format=3 uid="uid://chdhfutfrrjjg"]
+[gd_scene load_steps=4 format=3 uid="uid://chdhfutfrrjjg"]
 
 [ext_resource type="Script" path="res://Scripts/MultiplayerTest.cs" id="1_0wj3n"]
 [ext_resource type="PackedScene" uid="uid://dcwuslljujpl4" path="res://Prefabs/basic_character.tscn" id="2_i0p1m"]
+[ext_resource type="PackedScene" uid="uid://dkvqs8cedf5j0" path="res://Prefabs/bullet_manager.tscn" id="2_xe5ip"]
 
-[node name="MultiplayerTest" type="Node2D"]
+[node name="MultiplayerTest" type="Node2D" node_paths=PackedStringArray("bulletManager")]
 script = ExtResource("1_0wj3n")
 playerScene = ExtResource("2_i0p1m")
+bulletManager = NodePath("BulletManager")
+
+[node name="BulletManager" parent="." instance=ExtResource("2_xe5ip")]
 
 [node name="HostButton" type="Button" parent="."]
 offset_left = 568.0

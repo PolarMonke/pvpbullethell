@@ -6,9 +6,13 @@ using System.Runtime.CompilerServices;
 public partial class BasicCharacter : CharacterBody2D
 {
     [Export] private float _speed = 400.0f;
-    [Export] private PackedScene bullet;
+    [Export] private PackedScene bulletScene;
 
     [Export] private Marker2D bulletSpawn;
+
+    [Signal]
+    public delegate void PlayerFiredBulletEventHandler(Area2D bullet, Vector2 postition, Vector2 direction);
+
 	private Vector2 _previousPosition;
 
 
@@ -63,14 +67,29 @@ public partial class BasicCharacter : CharacterBody2D
 
     private void Shoot()
     {
-        Node2D bulletInstance = bullet.Instantiate<Node2D>();
-        AddChild(bulletInstance);
+        if (bulletScene == null || bulletSpawn == null)
+        {
+            GD.PrintErr("Assign bullet and bulletSpawn in editor");
+            return;
+        }
+
+        Area2D bulletInstance = bulletScene.Instantiate<Area2D>();
+        if (bulletInstance == null)
+        {
+            GD.PrintErr("Could not get bullet scene as a Area2D");
+            return;
+        }
         bulletInstance.GlobalPosition = bulletSpawn.GlobalPosition;
 
         Vector2 target = GetGlobalMousePosition();
-        Vector2 directionToMouse = bulletInstance.GlobalPosition.DirectionTo(target).Normalized();
-        Bullet bulletScript = bulletInstance as Bullet;
-        bulletScript.SetDirection(directionToMouse);
+        Vector2 directionToMouse = bulletSpawn.GlobalPosition.DirectionTo(target).Normalized();
+
+        Variant scriptVariant = bulletInstance.GetScript();
+        if (scriptVariant.Obj is Bullet bulletScript)
+        {
+            bulletScript.SetDirection(directionToMouse);
+        }
+        EmitSignal(SignalName.PlayerFiredBullet, bulletInstance, bulletSpawn.GlobalPosition, directionToMouse);
     }
 
    [Rpc(MultiplayerApi.RpcMode.AnyPeer)]

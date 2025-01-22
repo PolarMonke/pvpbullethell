@@ -14,7 +14,7 @@ size = Vector2(126.308, 128)
 
 [node name="BasicCharacter" type="CharacterBody2D" node_paths=PackedStringArray("bulletSpawn")]
 script = ExtResource("1_2loaq")
-bullet = ExtResource("2_3823h")
+bulletScene = ExtResource("2_3823h")
 bulletSpawn = NodePath("BulletSpawn")
 
 [node name="Sprite2D" type="Sprite2D" parent="."]
