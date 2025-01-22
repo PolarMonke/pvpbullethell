@@ -1,7 +1,7 @@
 [gd_scene load_steps=5 format=3 uid="uid://d2yi4qakdybi7"]
 
 [ext_resource type="Script" path="res://Scripts/HeroCharacter.cs" id="1_x03yp"]
-[ext_resource type="Texture2D" uid="uid://du5mbljcvpvlm" path="res://icon.svg" id="1_xbi37"]
+[ext_resource type="Texture2D" uid="uid://du5mbljcvpvlm" path="res://Sprites/icon.svg" id="1_xbi37"]
 
 [sub_resource type="SceneReplicationConfig" id="SceneReplicationConfig_t8fe7"]
 properties/0/path = NodePath(".:position")
