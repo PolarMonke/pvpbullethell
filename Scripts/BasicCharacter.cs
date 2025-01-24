@@ -7,15 +7,12 @@ public partial class BasicCharacter : CharacterBody2D
 {
     [Export] private float _speed = 400.0f;
     [Export] private PackedScene bulletScene;
-
     [Export] private Marker2D bulletSpawn;
-
     [Signal]
     public delegate void PlayerFiredBulletEventHandler(Area2D bullet, Vector2 postition, Vector2 direction);
+    private Vector2 _previousPosition;
 
-	private Vector2 _previousPosition;
-
-
+    public bool IsLocalPlayer;
 
     public override void _EnterTree()
     {
@@ -59,14 +56,21 @@ public partial class BasicCharacter : CharacterBody2D
 
     public override void _UnhandledInput(InputEvent @event)
     {
-        if (@event.IsActionPressed("shoot"))
+        if (@event.IsActionPressed("shoot") && IsMultiplayerAuthority())
         {
-            Shoot();
+            Rpc(nameof(Shoot), MultiplayerPeer.TargetPeerServer);
         }
     }
 
+    [Rpc(MultiplayerApi.RpcMode.AnyPeer)]
     private void Shoot()
     {
+        GD.Print("Shoot");
+        if (!IsMultiplayerAuthority())
+        {
+            GD.PrintErr("Player is not a multiplayer authority");
+            return;
+        }
         if (bulletScene == null || bulletSpawn == null)
         {
             GD.PrintErr("Assign bullet and bulletSpawn in editor");
@@ -80,10 +84,8 @@ public partial class BasicCharacter : CharacterBody2D
             return;
         }
         bulletInstance.GlobalPosition = bulletSpawn.GlobalPosition;
-
         Vector2 target = GetGlobalMousePosition();
         Vector2 directionToMouse = bulletSpawn.GlobalPosition.DirectionTo(target).Normalized();
-
         Variant scriptVariant = bulletInstance.GetScript();
         if (scriptVariant.Obj is Bullet bulletScript)
         {
@@ -95,18 +97,18 @@ public partial class BasicCharacter : CharacterBody2D
    [Rpc(MultiplayerApi.RpcMode.AnyPeer)]
     private void SetPlayerPosition(Vector2 position)
     {
-		if (!IsMultiplayerAuthority())
-		{
-			Position = position;
-		}
+        if (!IsMultiplayerAuthority())
+        {
+        Position = position;
+        }
     }
 
     [Rpc(MultiplayerApi.RpcMode.AnyPeer)]
     private void SetPlayerRotation(float rotation)
     {
-		if (!IsMultiplayerAuthority())
-		{
-			Rotation = rotation;
-		}
+        if (!IsMultiplayerAuthority())
+        {
+        Rotation = rotation;
+        }
     }
 }

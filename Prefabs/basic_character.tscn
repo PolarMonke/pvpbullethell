@@ -4,13 +4,10 @@
 [ext_resource type="PackedScene" uid="uid://dh2uvcnuxnr2v" path="res://Prefabs/bullet.tscn" id="2_3823h"]
 [ext_resource type="Texture2D" uid="uid://du5mbljcvpvlm" path="res://Sprites/icon.svg" id="2_namfe"]
 
-[sub_resource type="SceneReplicationConfig" id="SceneReplicationConfig_fe12w"]
-properties/0/path = NodePath(".:position")
-properties/0/spawn = true
-properties/0/replication_mode = 1
-
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_nhc3g"]
 size = Vector2(126.308, 128)
+
+[sub_resource type="SceneReplicationConfig" id="SceneReplicationConfig_rqn0f"]
 
 [node name="BasicCharacter" type="CharacterBody2D" node_paths=PackedStringArray("bulletSpawn")]
 script = ExtResource("1_2loaq")
@@ -19,9 +16,6 @@ bulletSpawn = NodePath("BulletSpawn")
 
 [node name="Sprite2D" type="Sprite2D" parent="."]
 texture = ExtResource("2_namfe")
-
-[node name="MultiplayerSynchronizer" type="MultiplayerSynchronizer" parent="."]
-replication_config = SubResource("SceneReplicationConfig_fe12w")
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
 position = Vector2(-2.98023e-08, 0)
@@ -32,3 +26,6 @@ debug_color = Color(1, 0.270588, 0.756863, 0.482353)
 
 [node name="BulletSpawn" type="Marker2D" parent="."]
 position = Vector2(64, 0)
+
+[node name="MultiplayerSynchronizer" type="MultiplayerSynchronizer" parent="."]
+replication_config = SubResource("SceneReplicationConfig_rqn0f")
