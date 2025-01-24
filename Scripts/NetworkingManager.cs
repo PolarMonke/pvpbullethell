@@ -50,9 +50,8 @@ public partial class NetworkingManager : Node
         GD.Print($"Peer connected: {id}");
         if (Multiplayer.IsServer())
         {
-            //Tell the client to create existing players
             foreach (int playerId in playerIds)
-   {
+            {
                 if (playerId != (int)id)
                 {
                   RpcId((int)id, nameof(_createPlayer), playerId);
@@ -60,11 +59,11 @@ public partial class NetworkingManager : Node
                 }
             }
            
-            _createPlayer((int)id); //tell all to create this player
+            _createPlayer((int)id);
         }
         else
         {
-           _createPlayer(Multiplayer.GetUniqueId()); //Clients make their own player
+           _createPlayer(Multiplayer.GetUniqueId());
         }
     }
 

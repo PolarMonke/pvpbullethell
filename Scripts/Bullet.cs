@@ -1,5 +1,6 @@
 using Godot;
 using System;
+using System.Runtime;
 
 public partial class Bullet : Area2D
 {
@@ -17,6 +18,7 @@ public partial class Bullet : Area2D
         AddChild(_lifeTimer);
         _lifeTimer.Start();
         _lifeTimer.Timeout += DestroyBulletAfterTime;
+		GD.Print("bullet spawned");
     }
 
 	public override void _PhysicsProcess(double delta)
@@ -26,7 +28,7 @@ public partial class Bullet : Area2D
 			var velocity = direction * speed;
 			GlobalPosition += velocity;
 		}
-		Rpc(nameof(SetBulletPosition), Position);
+		Rpc(nameof(SetBulletPosition), MultiplayerPeer.TargetPeerServer, Position);
 	}
 	public void SetDirection(Vector2 direction)
 	{
@@ -38,9 +40,10 @@ public partial class Bullet : Area2D
 		QueueFree();
 	}
 
-	 [Rpc(MultiplayerApi.RpcMode.AnyPeer)]
+	[Rpc(MultiplayerApi.RpcMode.AnyPeer)]
     private void SetBulletPosition(Vector2 position)
     {
+		GD.Print("bullets sync");
 		if (!IsMultiplayerAuthority())
 		{
 			Position = position;

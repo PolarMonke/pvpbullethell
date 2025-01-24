@@ -56,14 +56,21 @@ public partial class BasicCharacter : CharacterBody2D
 
     public override void _UnhandledInput(InputEvent @event)
     {
-        if (@event.IsActionPressed("shoot") && IsMultiplayerAuthority())
+        if (@event.IsActionPressed("shoot"))
         {
-            Rpc(nameof(Shoot), MultiplayerPeer.TargetPeerServer);
+            if(IsMultiplayerAuthority())
+            {
+                Shoot();
+            }
+            else
+            {
+                Rpc(nameof(Shoot));
+            }
         }
     }
 
     [Rpc(MultiplayerApi.RpcMode.AnyPeer)]
-    private void Shoot()
+    public void Shoot()
     {
         GD.Print("Shoot");
         if (!IsMultiplayerAuthority())
