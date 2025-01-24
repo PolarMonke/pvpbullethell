@@ -12,7 +12,6 @@ public partial class BasicCharacter : CharacterBody2D
     public delegate void PlayerFiredBulletEventHandler(Area2D bullet, Vector2 postition, Vector2 direction);
     private Vector2 _previousPosition;
 
-    public bool IsLocalPlayer;
 
     public override void _EnterTree()
     {
@@ -55,29 +54,26 @@ public partial class BasicCharacter : CharacterBody2D
     }
 
     public override void _UnhandledInput(InputEvent @event)
-    {
-        if (@event.IsActionPressed("shoot"))
         {
-            if(IsMultiplayerAuthority())
+            if (@event.IsActionPressed("shoot"))
             {
-                Shoot();
-            }
-            else
-            {
-                Rpc(nameof(Shoot));
+                if (IsMultiplayerAuthority())
+                {
+                    GD.Print($"Host player {Multiplayer.GetUniqueId()} is shooting locally");
+                    Shoot(bulletSpawn.GlobalPosition, GetGlobalMousePosition());
+                } 
+                else
+                {
+                    GD.Print($"Client player {Multiplayer.GetUniqueId()} is calling Rpc");
+                    RpcId(Multiplayer.GetUniqueId(), nameof(Shoot), bulletSpawn.GlobalPosition, GetGlobalMousePosition());
+                }
             }
         }
-    }
 
-    [Rpc(MultiplayerApi.RpcMode.AnyPeer)]
-    public void Shoot()
+    [Rpc(MultiplayerApi.RpcMode.Authority, CallLocal = true)]
+    public void Shoot(Vector2 startPosition, Vector2 targetPosition)
     {
-        GD.Print("Shoot");
-        if (!IsMultiplayerAuthority())
-        {
-            GD.PrintErr("Player is not a multiplayer authority");
-            return;
-        }
+        GD.Print($"Shoot function called by: {Multiplayer.GetUniqueId()}");
         if (bulletScene == null || bulletSpawn == null)
         {
             GD.PrintErr("Assign bullet and bulletSpawn in editor");
@@ -90,15 +86,17 @@ public partial class BasicCharacter : CharacterBody2D
             GD.PrintErr("Could not get bullet scene as a Area2D");
             return;
         }
-        bulletInstance.GlobalPosition = bulletSpawn.GlobalPosition;
-        Vector2 target = GetGlobalMousePosition();
-        Vector2 directionToMouse = bulletSpawn.GlobalPosition.DirectionTo(target).Normalized();
+        
+        Vector2 directionToMouse = startPosition.DirectionTo(targetPosition).Normalized();
+        bulletInstance.GlobalPosition = startPosition;
+
         Variant scriptVariant = bulletInstance.GetScript();
         if (scriptVariant.Obj is Bullet bulletScript)
         {
             bulletScript.SetDirection(directionToMouse);
         }
-        EmitSignal(SignalName.PlayerFiredBullet, bulletInstance, bulletSpawn.GlobalPosition, directionToMouse);
+        GD.Print($"Bullet fired by {Multiplayer.GetUniqueId()}");
+        EmitSignal(SignalName.PlayerFiredBullet, bulletInstance, startPosition, directionToMouse);
     }
 
    [Rpc(MultiplayerApi.RpcMode.AnyPeer)]
@@ -106,7 +104,7 @@ public partial class BasicCharacter : CharacterBody2D
     {
         if (!IsMultiplayerAuthority())
         {
-        Position = position;
+            Position = position;
         }
     }
 
@@ -115,7 +113,7 @@ public partial class BasicCharacter : CharacterBody2D
     {
         if (!IsMultiplayerAuthority())
         {
-        Rotation = rotation;
+            Rotation = rotation;
         }
     }
 }

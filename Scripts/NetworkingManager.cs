@@ -106,7 +106,6 @@ public partial class NetworkingManager : Node
             GD.PrintErr("Error: Player scene is not Node2D or a descendant");
             return;
         }
-
         player.Name = id.ToString();
         playerNodes.Add(id, player);
         AddChild(player);

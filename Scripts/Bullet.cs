@@ -4,7 +4,6 @@ using System.Runtime;
 
 public partial class Bullet : Area2D
 {
-	public int ownerID; //TODO: implement shooting in multiplayer
 	[Export] public int speed = 10;
 	[Export] public float LifeTime = 4.0f;
     private Timer _lifeTimer;
@@ -18,7 +17,6 @@ public partial class Bullet : Area2D
         AddChild(_lifeTimer);
         _lifeTimer.Start();
         _lifeTimer.Timeout += DestroyBulletAfterTime;
-		GD.Print("bullet spawned");
     }
 
 	public override void _PhysicsProcess(double delta)
@@ -28,7 +26,7 @@ public partial class Bullet : Area2D
 			var velocity = direction * speed;
 			GlobalPosition += velocity;
 		}
-		Rpc(nameof(SetBulletPosition), MultiplayerPeer.TargetPeerServer, Position);
+		//Rpc(nameof(this.SetBulletPosition), Position);
 	}
 	public void SetDirection(Vector2 direction)
 	{
@@ -41,9 +39,8 @@ public partial class Bullet : Area2D
 	}
 
 	[Rpc(MultiplayerApi.RpcMode.AnyPeer)]
-    private void SetBulletPosition(Vector2 position)
+    public void SetBulletPosition(Vector2 position)
     {
-		GD.Print("bullets sync");
 		if (!IsMultiplayerAuthority())
 		{
 			Position = position;
