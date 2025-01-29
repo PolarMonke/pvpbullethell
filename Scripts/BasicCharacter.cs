@@ -54,26 +54,39 @@ public partial class BasicCharacter : CharacterBody2D
     }
 
     public override void _UnhandledInput(InputEvent @event)
+    {
+        if (@event.IsActionPressed("shoot"))
         {
-            if (@event.IsActionPressed("shoot"))
+            if (IsMultiplayerAuthority())
             {
-                if (IsMultiplayerAuthority())
+                if (Multiplayer.IsServer())
                 {
-                    GD.Print($"Host player {Multiplayer.GetUniqueId()} is shooting locally");
                     Shoot(bulletSpawn.GlobalPosition, GetGlobalMousePosition());
-                } 
+                }
                 else
                 {
-                    GD.Print($"Client player {Multiplayer.GetUniqueId()} is calling Rpc");
-                    RpcId(Multiplayer.GetUniqueId(), nameof(Shoot), bulletSpawn.GlobalPosition, GetGlobalMousePosition());
+                    RpcId(1, nameof(ServerShoot), bulletSpawn.GlobalPosition, GetGlobalMousePosition());
                 }
             }
         }
+    }
 
-    [Rpc(MultiplayerApi.RpcMode.Authority, CallLocal = true)]
-    public void Shoot(Vector2 startPosition, Vector2 targetPosition)
+    [Rpc(MultiplayerApi.RpcMode.AnyPeer)]
+    private void ServerShoot(Vector2 startPosition, Vector2 targetPosition)
     {
-        GD.Print($"Shoot function called by: {Multiplayer.GetUniqueId()}");
+        if (Multiplayer.IsServer())
+        {
+            int senderId = Multiplayer.GetRemoteSenderId();
+            if (senderId == GetMultiplayerAuthority())
+            {
+                Shoot(startPosition, targetPosition);
+            }
+        }
+    }
+
+    private void Shoot(Vector2 startPosition, Vector2 targetPosition)
+    {
+        GD.Print($"Server shooting bullet for player {Name}");
         if (bulletScene == null || bulletSpawn == null)
         {
             GD.PrintErr("Assign bullet and bulletSpawn in editor");
@@ -81,21 +94,15 @@ public partial class BasicCharacter : CharacterBody2D
         }
 
         Area2D bulletInstance = bulletScene.Instantiate<Area2D>();
-        if (bulletInstance == null)
-        {
-            GD.PrintErr("Could not get bullet scene as a Area2D");
-            return;
-        }
-        
         Vector2 directionToMouse = startPosition.DirectionTo(targetPosition).Normalized();
         bulletInstance.GlobalPosition = startPosition;
 
-        Variant scriptVariant = bulletInstance.GetScript();
-        if (scriptVariant.Obj is Bullet bulletScript)
+        var bulletScript = bulletInstance as Bullet;
+        if(bulletScript != null)
         {
             bulletScript.SetDirection(directionToMouse);
         }
-        GD.Print($"Bullet fired by {Multiplayer.GetUniqueId()}");
+
         EmitSignal(SignalName.PlayerFiredBullet, bulletInstance, startPosition, directionToMouse);
     }
 

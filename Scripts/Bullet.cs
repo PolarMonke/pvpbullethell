@@ -26,7 +26,12 @@ public partial class Bullet : Area2D
 			var velocity = direction * speed;
 			GlobalPosition += velocity;
 		}
-		//Rpc(nameof(this.SetBulletPosition), Position);
+
+		// If server, periodically sync position
+		if (Multiplayer.IsServer() && _lifeTimer.TimeLeft % 0.1f < delta)
+		{
+			Rpc(nameof(SetBulletPosition), Position);
+		}
 	}
 	public void SetDirection(Vector2 direction)
 	{
