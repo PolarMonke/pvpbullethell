@@ -5,13 +5,16 @@ using System.Runtime.CompilerServices;
 
 public partial class BasicCharacter : CharacterBody2D
 {
-    [Export] private float _speed = 400.0f;
+    [Export] private float _speed = 200.0f;
     [Export] private PackedScene bulletScene;
     [Export] private Marker2D bulletSpawn;
+    [Export] private AnimationPlayer animationPlayer;
+
     [Signal]
     public delegate void PlayerFiredBulletEventHandler(Area2D bullet, Vector2 postition, Vector2 direction);
     private Vector2 _previousPosition;
 
+    private bool _facingRight = true;
 
     public override void _EnterTree()
     {
@@ -26,8 +29,7 @@ public partial class BasicCharacter : CharacterBody2D
         if (IsMultiplayerAuthority())
         {
             Walk();
-            Rotate();
-            
+            UpdateFacingDirection();
         }
     }
     protected void Walk()
@@ -35,6 +37,9 @@ public partial class BasicCharacter : CharacterBody2D
         _previousPosition = Position;
         Vector2 velocity = Input.GetVector("ui_left", "ui_right", "ui_up", "ui_down") * _speed;
         Velocity = velocity;
+        
+
+
         MoveAndSlide();
 
         for (int i = 0; i < GetSlideCollisionCount(); i++) { //TODO: Optimize
@@ -47,10 +52,33 @@ public partial class BasicCharacter : CharacterBody2D
         }
         Rpc(nameof(SetPlayerPosition), Position);
     }
-    private void Rotate()
+    private void UpdateFacingDirection()
     {
-        LookAt(GetGlobalMousePosition());
-        Rpc(nameof(SetPlayerRotation), Rotation);
+        Vector2 mousePosition = GetGlobalMousePosition();
+        float moveInput = Input.GetAxis("ui_left", "ui_right");
+
+        if (moveInput != 0)
+        {
+            bool movingRight = moveInput > 0;
+
+            bool mouseOpposite = (movingRight && mousePosition.X < GlobalPosition.X) ||
+                                (!movingRight && mousePosition.X > GlobalPosition.X);
+
+            if (!mouseOpposite)
+            {
+                _facingRight = movingRight;
+            }
+        }
+        else
+        {
+            _facingRight = mousePosition.X > GlobalPosition.X;
+        }
+        Vector2 newScale = _facingRight ? new Vector2(1, 1) : new Vector2(-1, 1);
+        if (Scale != newScale)
+        {
+            Scale = newScale;
+            Rpc(nameof(SetPlayerScale), Scale);
+        }
     }
 
     public override void _UnhandledInput(InputEvent @event)
@@ -86,6 +114,8 @@ public partial class BasicCharacter : CharacterBody2D
 
     private void Shoot(Vector2 startPosition, Vector2 targetPosition)
     {
+        
+
         GD.Print($"Server shooting bullet for player {Name}");
         if (bulletScene == null || bulletSpawn == null)
         {
@@ -116,11 +146,11 @@ public partial class BasicCharacter : CharacterBody2D
     }
 
     [Rpc(MultiplayerApi.RpcMode.AnyPeer)]
-    private void SetPlayerRotation(float rotation)
+    private void SetPlayerScale(Vector2 scale)
     {
         if (!IsMultiplayerAuthority())
         {
-            Rotation = rotation;
+            Scale = scale;
         }
     }
 }

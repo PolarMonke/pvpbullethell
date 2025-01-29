@@ -1,13 +1,15 @@
 [gd_scene load_steps=6 format=3 uid="uid://chdhfutfrrjjg"]
 
 [ext_resource type="Script" path="res://Scripts/MultiplayerTest.cs" id="1_0wj3n"]
-[ext_resource type="PackedScene" uid="uid://dcwuslljujpl4" path="res://Prefabs/basic_character.tscn" id="2_i0p1m"]
 [ext_resource type="PackedScene" uid="uid://dkvqs8cedf5j0" path="res://Prefabs/bullet_manager.tscn" id="2_xe5ip"]
 [ext_resource type="PackedScene" uid="uid://dh2uvcnuxnr2v" path="res://Prefabs/bullet.tscn" id="3_hgol6"]
 [ext_resource type="Script" path="res://Scripts/NetworkingManager.cs" id="4_8rdtt"]
+[ext_resource type="PackedScene" uid="uid://d2yi4qakdybi7" path="res://Prefabs/hero_character.tscn" id="5_dmgmj"]
 
 [node name="MultiplayerTest" type="Node2D"]
 script = ExtResource("1_0wj3n")
+
+[node name="Floor" type="Area2D" parent="."]
 
 [node name="BulletManager" parent="." instance=ExtResource("2_xe5ip")]
 bulletScene = ExtResource("3_hgol6")
@@ -35,7 +37,7 @@ spawn_path = NodePath("..")
 
 [node name="NetworkingManager" type="Node2D" parent="."]
 script = ExtResource("4_8rdtt")
-playerScene = ExtResource("2_i0p1m")
+playerScene = ExtResource("5_dmgmj")
 
 [connection signal="pressed" from="HostButton" to="." method="_OnHostButtonPressed"]
 [connection signal="pressed" from="JoinButton" to="." method="_OnJoinButtonPressed"]
