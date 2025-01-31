@@ -8,7 +8,7 @@ public partial class BasicCharacter : CharacterBody2D
     [Export] private float _speed = 200.0f;
     [Export] private PackedScene bulletScene;
     [Export] private Marker2D bulletSpawn;
-    [Export] private AnimationPlayer animationPlayer;
+    [Export] private AnimatedSprite2D animatedSprite;
 
     [Signal]
     public delegate void PlayerFiredBulletEventHandler(Area2D bullet, Vector2 postition, Vector2 direction);
@@ -16,11 +16,18 @@ public partial class BasicCharacter : CharacterBody2D
 
     private bool _facingRight = true;
 
+    private enum AnimationState {Idle, Walk, Attack}    
+    private AnimationState currentAnimationState = AnimationState.Idle;
+
     public override void _EnterTree()
     {
         if (Name != null)
         {
+            animatedSprite.Animation = "Idle";
+            animatedSprite.Play();
             SetMultiplayerAuthority(Int32.Parse(Name));
+
+            animatedSprite.AnimationFinished += OnAnimationFinished;
         }
     }
 
@@ -30,19 +37,26 @@ public partial class BasicCharacter : CharacterBody2D
         {
             Walk();
             UpdateFacingDirection();
+            UpdateAnimation();
         }
     }
     protected void Walk()
     {
+        bool isMoving = Velocity.Length() > 0;
+        if (currentAnimationState != AnimationState.Attack)
+        {
+            currentAnimationState = isMoving ? AnimationState.Walk : AnimationState.Idle;
+        }
+
         _previousPosition = Position;
         Vector2 velocity = Input.GetVector("ui_left", "ui_right", "ui_up", "ui_down") * _speed;
         Velocity = velocity;
-        
 
 
         MoveAndSlide();
 
-        for (int i = 0; i < GetSlideCollisionCount(); i++) { //TODO: Optimize
+        for (int i = 0; i < GetSlideCollisionCount(); i++)
+        {
             KinematicCollision2D collision = GetSlideCollision(i);
             if (collision.GetCollider() is BasicCharacter otherPlayer)
             {
@@ -50,6 +64,7 @@ public partial class BasicCharacter : CharacterBody2D
                 Position -= pushVector;
             }
         }
+
         Rpc(nameof(SetPlayerPosition), Position);
     }
     private void UpdateFacingDirection()
@@ -78,6 +93,30 @@ public partial class BasicCharacter : CharacterBody2D
         {
             Scale = newScale;
             Rpc(nameof(SetPlayerScale), Scale);
+        }
+    }
+
+    private void UpdateAnimation()
+    {
+        string targetAnimation = currentAnimationState switch
+        {
+            AnimationState.Walk => "Walk",
+            AnimationState.Attack => "Attack",
+            _ => "Idle"
+        };
+
+        if (animatedSprite.Animation != targetAnimation || !animatedSprite.IsPlaying())
+        {
+            animatedSprite.Play(targetAnimation);
+        }
+    }
+
+    private void OnAnimationFinished(StringName animName)
+    {
+        if (animName == "Shoot")
+        {
+            currentAnimationState = Velocity.Length() > 0 ? AnimationState.Walk : AnimationState.Idle;
+            UpdateAnimation();
         }
     }
 
@@ -114,7 +153,7 @@ public partial class BasicCharacter : CharacterBody2D
 
     private void Shoot(Vector2 startPosition, Vector2 targetPosition)
     {
-        
+        currentAnimationState = AnimationState.Attack;
 
         GD.Print($"Server shooting bullet for player {Name}");
         if (bulletScene == null || bulletSpawn == null)
