@@ -88,12 +88,8 @@ public partial class BasicCharacter : CharacterBody2D
         {
             _facingRight = mousePosition.X > GlobalPosition.X;
         }
-        Vector2 newScale = _facingRight ? new Vector2(1, 1) : new Vector2(-1, 1);
-        if (Scale != newScale)
-        {
-            Scale = newScale;
-            Rpc(nameof(SetPlayerScale), Scale);
-        }
+        animatedSprite.FlipH = !_facingRight;
+        Rpc(nameof(SetFacingDirection), animatedSprite.FlipH);
     }
     private void SetAnimationState(AnimationState newState)
     {
@@ -200,11 +196,11 @@ public partial class BasicCharacter : CharacterBody2D
     }
 
     [Rpc(MultiplayerApi.RpcMode.AnyPeer)]
-    private void SetPlayerScale(Vector2 scale)
+    private void SetFacingDirection(bool direction)
     {
         if (!IsMultiplayerAuthority())
         {
-            Scale = scale;
+            animatedSprite.FlipH = direction;
         }
     }
 
