@@ -45,7 +45,7 @@ public partial class BasicCharacter : CharacterBody2D
         bool isMoving = Velocity.Length() > 0;
         if (currentAnimationState != AnimationState.Attack)
         {
-            currentAnimationState = isMoving ? AnimationState.Walk : AnimationState.Idle;
+            SetAnimationState(isMoving ? AnimationState.Walk : AnimationState.Idle);
         }
 
         _previousPosition = Position;
@@ -95,6 +95,24 @@ public partial class BasicCharacter : CharacterBody2D
             Rpc(nameof(SetPlayerScale), Scale);
         }
     }
+    private void SetAnimationState(AnimationState newState)
+    {
+        if (currentAnimationState == newState) return;
+        currentAnimationState = newState;
+
+        if (IsMultiplayerAuthority())
+        {
+            if (Multiplayer.IsServer())
+            {
+                Rpc(nameof(SyncAnimationState), (int)newState);
+            }
+            else
+            {
+                RpcId(1, nameof(ServerSyncAnimation), (int)newState);
+            }
+        }
+        UpdateAnimation();
+    }
 
     private void UpdateAnimation()
     {
@@ -111,13 +129,10 @@ public partial class BasicCharacter : CharacterBody2D
         }
     }
 
-    private void OnAnimationFinished(StringName animName)
+    private void OnAnimationFinished()
     {
-        if (animName == "Shoot")
-        {
-            currentAnimationState = Velocity.Length() > 0 ? AnimationState.Walk : AnimationState.Idle;
-            UpdateAnimation();
-        }
+        currentAnimationState = Velocity.Length() > 0 ? AnimationState.Walk : AnimationState.Idle;
+        UpdateAnimation();
     }
 
     public override void _UnhandledInput(InputEvent @event)
@@ -153,7 +168,7 @@ public partial class BasicCharacter : CharacterBody2D
 
     private void Shoot(Vector2 startPosition, Vector2 targetPosition)
     {
-        currentAnimationState = AnimationState.Attack;
+        SetAnimationState(AnimationState.Attack);
 
         GD.Print($"Server shooting bullet for player {Name}");
         if (bulletScene == null || bulletSpawn == null)
@@ -190,6 +205,30 @@ public partial class BasicCharacter : CharacterBody2D
         if (!IsMultiplayerAuthority())
         {
             Scale = scale;
+        }
+    }
+
+    
+    [Rpc(MultiplayerApi.RpcMode.AnyPeer)]
+    private void ServerSyncAnimation(int state)
+    {
+        if (Multiplayer.IsServer())
+        {
+            int senderId = Multiplayer.GetRemoteSenderId();
+            if (senderId == GetMultiplayerAuthority())
+            {
+                Rpc(nameof(SyncAnimationState), state);
+            }
+        }
+    }
+
+    [Rpc(MultiplayerApi.RpcMode.AnyPeer)]
+    private void SyncAnimationState(int state)
+    {
+        if (!IsMultiplayerAuthority())
+        {
+            currentAnimationState = (AnimationState)state;
+            UpdateAnimation();
         }
     }
 }
