@@ -6,8 +6,12 @@ using System.Runtime.CompilerServices;
 public partial class BasicCharacter : CharacterBody2D
 {
     [Export] private float _speed = 200.0f;
+
     [Export] private PackedScene bulletScene;
     [Export] private Marker2D bulletSpawn;
+    [Export] private Timer bulletCooldownNode;
+    [Export] private float bulletCooldown = 0.3f;
+
     [Export] private AnimatedSprite2D animatedSprite;
 
     [Signal]
@@ -47,7 +51,6 @@ public partial class BasicCharacter : CharacterBody2D
         {
             SetAnimationState(isMoving ? AnimationState.Walk : AnimationState.Idle);
         }
-
         _previousPosition = Position;
         Vector2 velocity = Input.GetVector("ui_left", "ui_right", "ui_up", "ui_down") * _speed;
         Velocity = velocity;
@@ -133,8 +136,9 @@ public partial class BasicCharacter : CharacterBody2D
 
     public override void _UnhandledInput(InputEvent @event)
     {
-        if (@event.IsActionPressed("shoot"))
+        if (@event.IsActionPressed("shoot") && bulletCooldownNode.IsStopped())
         {
+            bulletCooldownNode.Start(bulletCooldown);
             if (IsMultiplayerAuthority())
             {
                 if (Multiplayer.IsServer())
