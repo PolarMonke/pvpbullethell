@@ -4,13 +4,14 @@ using System.Runtime;
 
 public partial class Bullet : Area2D
 {
-	[Export] public int Damage;
+	[Export] public int Damage = 10;
 	[Export] public int Speed = 10;
 	[Export] public float LifeTime = 1.0f;
     private Timer _lifeTimer;
 	private Vector2 direction = Vector2.Zero;
 
 	public long HolderID;
+	private bool _damageApplied = false;
 
 	public override void _Ready()
     {
@@ -21,7 +22,7 @@ public partial class Bullet : Area2D
         _lifeTimer.Start();
         _lifeTimer.Timeout += DestroyBulletAfterTime;
 
-		BodyEntered += OnBodyEntered;
+		//BodyEntered += OnBodyEntered;
     }
 
 	public override void _PhysicsProcess(double delta)
@@ -43,19 +44,27 @@ public partial class Bullet : Area2D
 	}
 
 	private void OnBodyEntered(Node body)
-	{
-		if (body is BasicCharacter player)
+    {
+        if (_damageApplied) return;
+		GD.Print("Bullet collided");
+        if (body is BasicCharacter player)
         {
-			//GD.Print(player.GetMultiplayerAuthority());
-			//GD.Print(HolderID);
+            GD.Print($"Bullet: Collision with player, HolderID = {HolderID}, Player Authority = {player.GetMultiplayerAuthority()}");
+
             if (player.GetMultiplayerAuthority() != HolderID)
             {
-				
-                player.TakeDamage(Damage);
+                GD.Print("Bullet: Applying damage");
+                player.Rpc(nameof(player.TakeDamage), Damage);
+                _damageApplied = true;
             }
-            QueueFree();
+            else
+            {
+                GD.Print("Bullet: Not applying damage (self-hit)");
+            }
+            this.QueueFree();
+			//SetDeferred("free", 1);
         }
-	}
+    }
 
 	private void DestroyBulletAfterTime()
 	{

@@ -7,8 +7,8 @@ public partial class BasicCharacter : CharacterBody2D
 {
     [Export] private float _speed = 200.0f;
 
-    [Export] public int MaxHealth;
-    [Export] public int Health;
+    [Export] public int MaxHealth = 100;
+    [Export] public int Health = 100;
 
     [Export] ProgressBar healthBar;
 
@@ -81,19 +81,22 @@ public partial class BasicCharacter : CharacterBody2D
     }
     
 
+    [Rpc(MultiplayerApi.RpcMode.AnyPeer)]
     public void TakeDamage(int damage)
     {
-        if (!IsMultiplayerAuthority()) { return; }
+        //if (!IsMultiplayerAuthority()) { return; }
         GD.Print($"Taken {damage} damage");
         Health -= damage;
-        Health = Mathf.Clamp(Health, 0, MaxHealth);
+        GD.Print($"Current HP: {Health}");
         UpdateHealthDisplay();
-        
+
         if (Health <= 0)
         {
+            GD.Print("Player died");
             Die();
         }
     }
+    
     private void UpdateHealthDisplay()
     {
         if (healthBar != null)
@@ -101,10 +104,12 @@ public partial class BasicCharacter : CharacterBody2D
             healthBar.Value = Health;
         }
     }
+
     [Rpc(MultiplayerApi.RpcMode.AnyPeer, CallLocal = true)]
     private void SyncHealth(int newHealth)
     {
         Health = newHealth;
+        healthBar.Value = Health;
         UpdateHealthDisplay();
     }
     private void Die()
@@ -180,7 +185,7 @@ public partial class BasicCharacter : CharacterBody2D
             GD.PrintErr("Assign bullet and bulletSpawn in editor");
             return;
         }
-
+        SetAnimationState(AnimationState.Attack);
         Area2D bulletInstance = bulletScene.Instantiate<Area2D>();
         Vector2 directionToMouse = bulletSpawn.GlobalPosition.DirectionTo(GetGlobalMousePosition()).Normalized();
         bulletInstance.GlobalPosition = bulletSpawn.GlobalPosition;
