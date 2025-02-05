@@ -84,34 +84,31 @@ public partial class BasicCharacter : CharacterBody2D
     [Rpc(MultiplayerApi.RpcMode.AnyPeer)]
     public void TakeDamage(int damage)
     {
-        //if (!IsMultiplayerAuthority()) { return; }
-        GD.Print($"Taken {damage} damage");
-        Health -= damage;
-        GD.Print($"Current HP: {Health}");
-        UpdateHealthDisplay();
+        if (!IsMultiplayerAuthority()) return;
 
-        if (Health <= 0)
-        {
-            GD.Print("Player died");
-            Die();
-        }
-    }
-    
-    private void UpdateHealthDisplay()
-    {
-        if (healthBar != null)
-        {
-            healthBar.Value = Health;
-        }
+        Health -= damage;
+        Health = Mathf.Clamp(Health, 0, MaxHealth);
+
+        Rpc(nameof(SyncHealth), Health); 
+
+        if (Health <= 0) Die();
     }
 
     [Rpc(MultiplayerApi.RpcMode.AnyPeer, CallLocal = true)]
     private void SyncHealth(int newHealth)
     {
         Health = newHealth;
-        healthBar.Value = Health;
-        UpdateHealthDisplay();
+        UpdateHealthDisplay(); 
     }
+
+    private void UpdateHealthDisplay()
+    {
+        if (healthBar != null)
+        {
+            healthBar.Value = Health; 
+        }
+    }
+
     private void Die()
     {
         Rpc(nameof(DeathEffects));
@@ -120,7 +117,6 @@ public partial class BasicCharacter : CharacterBody2D
     [Rpc(MultiplayerApi.RpcMode.Authority)]
     private void DeathEffects()
     {
-        // Анімацыя смерці і знікненне
         QueueFree();
     }
 
