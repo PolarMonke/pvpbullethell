@@ -15,19 +15,19 @@ script = ExtResource("1_0wj3n")
 bulletScene = ExtResource("3_hgol6")
 
 [node name="HostButton" type="Button" parent="."]
-offset_left = 568.0
-offset_top = 243.0
-offset_right = 612.0
-offset_bottom = 274.0
+offset_left = 848.0
+offset_top = 64.0
+offset_right = 892.0
+offset_bottom = 95.0
 scale = Vector2(0.996772, 0.951219)
 text = "Host"
 metadata/_edit_use_anchors_ = true
 
 [node name="JoinButton" type="Button" parent="."]
-offset_left = 569.0
-offset_top = 280.0
-offset_right = 613.0
-offset_bottom = 311.0
+offset_left = 849.0
+offset_top = 101.0
+offset_right = 893.0
+offset_bottom = 132.0
 text = "Join"
 metadata/_edit_use_anchors_ = true
 

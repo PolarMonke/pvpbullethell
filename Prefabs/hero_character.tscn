@@ -1,4 +1,4 @@
-[gd_scene load_steps=45 format=3 uid="uid://d2yi4qakdybi7"]
+[gd_scene load_steps=46 format=3 uid="uid://d2yi4qakdybi7"]
 
 [ext_resource type="Script" path="res://Scripts/HeroCharacter.cs" id="1_x03yp"]
 [ext_resource type="Texture2D" uid="uid://cgjhrx5wi3je1" path="res://Sprites/hero/Countess_Vampire/Attack_1.png" id="2_e1dd1"]
@@ -8,6 +8,7 @@
 [ext_resource type="Texture2D" uid="uid://b6tpbou5qycrs" path="res://Sprites/hero/Countess_Vampire/Dead.png" id="3_ltlbt"]
 [ext_resource type="Texture2D" uid="uid://bsov50epkkmu4" path="res://Sprites/hero/Countess_Vampire/Run.png" id="4_3sxru"]
 [ext_resource type="Texture2D" uid="uid://bswkrj8d5nllg" path="res://Sprites/hero/Countess_Vampire/Hurt.png" id="4_wfi0l"]
+[ext_resource type="Texture2D" uid="uid://du5mbljcvpvlm" path="res://Sprites/icon.svg" id="9_q7hm3"]
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_8pvhe"]
 atlas = ExtResource("2_e1dd1")
@@ -279,14 +280,14 @@ properties/0/spawn = true
 properties/0/replication_mode = 1
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_5ujdw"]
-size = Vector2(9.86777, 9.92802)
+size = Vector2(22.6959, 64.5322)
 
-[node name="HeroCharacter" type="CharacterBody2D" node_paths=PackedStringArray("bulletSpawn", "bulletCooldownNode", "animatedSprite")]
+[node name="HeroCharacter" type="CharacterBody2D" node_paths=PackedStringArray("healthBar", "bulletSpawn", "bulletCooldownNode", "animatedSprite")]
 script = ExtResource("1_x03yp")
+healthBar = NodePath("HealthBar")
 bulletScene = ExtResource("2_n0dm5")
 bulletSpawn = NodePath("AnimatedSprite2D/BulletSpawn")
 bulletCooldownNode = NodePath("BulletCooldownNode")
-bulletCooldown = 0.3
 animatedSprite = NodePath("AnimatedSprite2D")
 
 [node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="."]
@@ -296,13 +297,17 @@ frame = 2
 frame_progress = 0.886098
 
 [node name="BulletSpawn" type="Marker2D" parent="AnimatedSprite2D"]
-position = Vector2(11, 16)
+position = Vector2(16, 16)
+
+[node name="Sprite2D" type="Sprite2D" parent="AnimatedSprite2D/BulletSpawn"]
+scale = Vector2(0.1, 0.1)
+texture = ExtResource("9_q7hm3")
 
 [node name="MultiplayerSynchronizer" type="MultiplayerSynchronizer" parent="."]
 replication_config = SubResource("SceneReplicationConfig_t8fe7")
 
 [node name="Hitbox" type="CollisionShape2D" parent="."]
-position = Vector2(0, 28)
+position = Vector2(-3.5, 27.5)
 scale = Vector2(1.0134, 1.00725)
 shape = SubResource("RectangleShape2D_5ujdw")
 one_way_collision_margin = 0.0
@@ -310,3 +315,10 @@ debug_color = Color(1, 0.270588, 0.756863, 0.482353)
 
 [node name="BulletCooldownNode" type="Timer" parent="."]
 one_shot = true
+
+[node name="HealthBar" type="ProgressBar" parent="."]
+offset_left = -58.0
+offset_top = -38.0
+offset_right = 53.0
+offset_bottom = -11.0
+step = 1.0

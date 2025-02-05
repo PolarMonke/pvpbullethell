@@ -4,10 +4,13 @@ using System.Runtime;
 
 public partial class Bullet : Area2D
 {
-	[Export] public int speed = 10;
-	[Export] public float LifeTime = 4.0f;
+	[Export] public int Damage;
+	[Export] public int Speed = 10;
+	[Export] public float LifeTime = 1.0f;
     private Timer _lifeTimer;
 	private Vector2 direction = Vector2.Zero;
+
+	public long HolderID;
 
 	public override void _Ready()
     {
@@ -17,17 +20,18 @@ public partial class Bullet : Area2D
         AddChild(_lifeTimer);
         _lifeTimer.Start();
         _lifeTimer.Timeout += DestroyBulletAfterTime;
+
+		BodyEntered += OnBodyEntered;
     }
 
 	public override void _PhysicsProcess(double delta)
 	{
 		if (direction != Vector2.Zero)
 		{
-			var velocity = direction * speed;
+			var velocity = direction * Speed;
 			GlobalPosition += velocity;
 		}
 
-		// If server, periodically sync position
 		if (Multiplayer.IsServer() && _lifeTimer.TimeLeft % 0.1f < delta)
 		{
 			Rpc(nameof(SetBulletPosition), Position);
@@ -36,6 +40,21 @@ public partial class Bullet : Area2D
 	public void SetDirection(Vector2 direction)
 	{
 		this.direction = direction;
+	}
+
+	private void OnBodyEntered(Node body)
+	{
+		if (body is BasicCharacter player)
+        {
+			//GD.Print(player.GetMultiplayerAuthority());
+			//GD.Print(HolderID);
+            if (player.GetMultiplayerAuthority() != HolderID)
+            {
+				
+                player.TakeDamage(Damage);
+            }
+            QueueFree();
+        }
 	}
 
 	private void DestroyBulletAfterTime()

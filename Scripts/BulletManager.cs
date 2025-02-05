@@ -32,6 +32,7 @@ public partial class BulletManager : Node2D
         var bulletScript = bullet.GetNode<Bullet>(".");
         if (bulletScript != null)
         {
+            bulletScript.HolderID = Multiplayer.GetUniqueId();
             bulletScript.SetDirection(direction);
         }
         else

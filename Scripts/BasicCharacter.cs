@@ -7,6 +7,11 @@ public partial class BasicCharacter : CharacterBody2D
 {
     [Export] private float _speed = 200.0f;
 
+    [Export] public int MaxHealth;
+    [Export] public int Health;
+
+    [Export] ProgressBar healthBar;
+
     [Export] private PackedScene bulletScene;
     [Export] private Marker2D bulletSpawn;
     [Export] private Timer bulletCooldownNode;
@@ -30,6 +35,10 @@ public partial class BasicCharacter : CharacterBody2D
             animatedSprite.Animation = "Idle";
             animatedSprite.Play();
             SetMultiplayerAuthority(Int32.Parse(Name));
+
+            healthBar.MaxValue = MaxHealth;
+            Health = MaxHealth;
+            UpdateHealthDisplay();
 
             animatedSprite.AnimationFinished += OnAnimationFinished;
         }
@@ -70,30 +79,46 @@ public partial class BasicCharacter : CharacterBody2D
 
         Rpc(nameof(SetPlayerPosition), Position);
     }
-    private void UpdateFacingDirection()
+    
+
+    public void TakeDamage(int damage)
     {
-        Vector2 mousePosition = GetGlobalMousePosition();
-        float moveInput = Input.GetAxis("ui_left", "ui_right");
-
-        if (moveInput != 0)
+        if (!IsMultiplayerAuthority()) { return; }
+        GD.Print($"Taken {damage} damage");
+        Health -= damage;
+        Health = Mathf.Clamp(Health, 0, MaxHealth);
+        UpdateHealthDisplay();
+        
+        if (Health <= 0)
         {
-            bool movingRight = moveInput > 0;
-
-            bool mouseOpposite = (movingRight && mousePosition.X < GlobalPosition.X) ||
-                                (!movingRight && mousePosition.X > GlobalPosition.X);
-
-            if (!mouseOpposite)
-            {
-                _facingRight = movingRight;
-            }
+            Die();
         }
-        else
-        {
-            _facingRight = mousePosition.X > GlobalPosition.X;
-        }
-        animatedSprite.FlipH = !_facingRight;
-        Rpc(nameof(SetFacingDirection), animatedSprite.FlipH);
     }
+    private void UpdateHealthDisplay()
+    {
+        if (healthBar != null)
+        {
+            healthBar.Value = Health;
+        }
+    }
+    [Rpc(MultiplayerApi.RpcMode.AnyPeer, CallLocal = true)]
+    private void SyncHealth(int newHealth)
+    {
+        Health = newHealth;
+        UpdateHealthDisplay();
+    }
+    private void Die()
+    {
+        Rpc(nameof(DeathEffects));
+    }
+
+    [Rpc(MultiplayerApi.RpcMode.Authority)]
+    private void DeathEffects()
+    {
+        // Анімацыя смерці і знікненне
+        QueueFree();
+    }
+
     private void SetAnimationState(AnimationState newState)
     {
         if (currentAnimationState == newState) return;
@@ -141,35 +166,14 @@ public partial class BasicCharacter : CharacterBody2D
             bulletCooldownNode.Start(bulletCooldown);
             if (IsMultiplayerAuthority())
             {
-                if (Multiplayer.IsServer())
-                {
-                    Shoot(bulletSpawn.GlobalPosition, GetGlobalMousePosition());
-                }
-                else
-                {
-                    RpcId(1, nameof(ServerShoot), bulletSpawn.GlobalPosition, GetGlobalMousePosition());
-                }
+                    Shoot();
             }
         }
     }
 
-    [Rpc(MultiplayerApi.RpcMode.AnyPeer)]
-    private void ServerShoot(Vector2 startPosition, Vector2 targetPosition)
+    [Rpc(MultiplayerApi.RpcMode.Authority)]
+    private void Shoot()
     {
-        if (Multiplayer.IsServer())
-        {
-            int senderId = Multiplayer.GetRemoteSenderId();
-            if (senderId == GetMultiplayerAuthority())
-            {
-                Shoot(startPosition, targetPosition);
-            }
-        }
-    }
-
-    private void Shoot(Vector2 startPosition, Vector2 targetPosition)
-    {
-        SetAnimationState(AnimationState.Attack);
-
         GD.Print($"Server shooting bullet for player {Name}");
         if (bulletScene == null || bulletSpawn == null)
         {
@@ -178,17 +182,18 @@ public partial class BasicCharacter : CharacterBody2D
         }
 
         Area2D bulletInstance = bulletScene.Instantiate<Area2D>();
-        Vector2 directionToMouse = startPosition.DirectionTo(targetPosition).Normalized();
-        bulletInstance.GlobalPosition = startPosition;
+        Vector2 directionToMouse = bulletSpawn.GlobalPosition.DirectionTo(GetGlobalMousePosition()).Normalized();
+        bulletInstance.GlobalPosition = bulletSpawn.GlobalPosition;
 
         var bulletScript = bulletInstance as Bullet;
         if(bulletScript != null)
         {
+            bulletScript.HolderID = Multiplayer.GetUniqueId();
             bulletScript.SetDirection(directionToMouse);
         }
-
-        EmitSignal(SignalName.PlayerFiredBullet, bulletInstance, startPosition, directionToMouse);
+        GetParent().AddChild(bulletInstance);
     }
+    
 
    [Rpc(MultiplayerApi.RpcMode.AnyPeer)]
     private void SetPlayerPosition(Vector2 position)
@@ -199,11 +204,38 @@ public partial class BasicCharacter : CharacterBody2D
         }
     }
 
+    private void UpdateFacingDirection()
+    {
+        Vector2 mousePosition = GetGlobalMousePosition();
+        float moveInput = Input.GetAxis("ui_left", "ui_right");
+
+        if (moveInput != 0)
+        {
+            bool movingRight = moveInput > 0;
+
+            bool mouseOpposite = (movingRight && mousePosition.X < GlobalPosition.X) ||
+                                (!movingRight && mousePosition.X > GlobalPosition.X);
+
+            if (!mouseOpposite)
+            {
+                _facingRight = movingRight;
+            }
+        }
+        else
+        {
+            _facingRight = mousePosition.X > GlobalPosition.X;
+        }
+        animatedSprite.FlipH = !_facingRight;
+        bulletSpawn.Position = _facingRight ? new Vector2(16, 16) : new Vector2(-20, 16);
+        Rpc(nameof(SetFacingDirection), animatedSprite.FlipH, bulletSpawn.Position);
+    }
+
     [Rpc(MultiplayerApi.RpcMode.AnyPeer)]
-    private void SetFacingDirection(bool direction)
+    private void SetFacingDirection(bool direction, Vector2 position)
     {
         if (!IsMultiplayerAuthority())
         {
+            bulletSpawn.Position = position;
             animatedSprite.FlipH = direction;
         }
     }
