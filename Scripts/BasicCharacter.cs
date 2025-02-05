@@ -5,28 +5,29 @@ using System.Runtime.CompilerServices;
 
 public partial class BasicCharacter : CharacterBody2D
 {
-    [Export] private float _speed = 200.0f;
+    [Export] protected float _speed = 200.0f;
 
     [Export] public int MaxHealth = 100;
     [Export] public int Health = 100;
+    protected bool _canBeHurt = true;
 
-    [Export] ProgressBar healthBar;
+    [Export] protected ProgressBar healthBar;
 
-    [Export] private PackedScene bulletScene;
-    [Export] private Marker2D bulletSpawn;
-    [Export] private Timer bulletCooldownNode;
-    [Export] private float bulletCooldown = 0.3f;
+    [Export] protected PackedScene bulletScene;
+    [Export] protected Marker2D bulletSpawn;
+    [Export] protected Timer bulletCooldownNode;
+    [Export] protected float bulletCooldown = 0.3f;
 
-    [Export] private AnimatedSprite2D animatedSprite;
+    [Export] public AnimatedSprite2D animatedSprite;
 
     [Signal]
     public delegate void PlayerFiredBulletEventHandler(Area2D bullet, Vector2 postition, Vector2 direction);
-    private Vector2 _previousPosition;
+    protected Vector2 _previousPosition;
 
     private bool _facingRight = true;
 
-    private enum AnimationState {Idle, Walk, Attack}    
-    private AnimationState currentAnimationState = AnimationState.Idle;
+    protected enum AnimationState {Idle, Walk, Attack, Run, Hurt, Die}    
+    protected AnimationState currentAnimationState = AnimationState.Idle;
 
     public override void _EnterTree()
     {
@@ -53,7 +54,7 @@ public partial class BasicCharacter : CharacterBody2D
             UpdateAnimation();
         }
     }
-    protected void Walk()
+    protected virtual void Walk()
     {
         bool isMoving = Velocity.Length() > 0;
         if (currentAnimationState != AnimationState.Attack)
@@ -84,14 +85,18 @@ public partial class BasicCharacter : CharacterBody2D
     [Rpc(MultiplayerApi.RpcMode.AnyPeer)]
     public void TakeDamage(int damage)
     {
-        if (!IsMultiplayerAuthority()) return;
+        if (_canBeHurt)
+        {
+            if (!IsMultiplayerAuthority()) return;
 
-        Health -= damage;
-        Health = Mathf.Clamp(Health, 0, MaxHealth);
+            Health -= damage;
+            Health = Mathf.Clamp(Health, 0, MaxHealth);
 
-        Rpc(nameof(SyncHealth), Health); 
+            Rpc(nameof(SyncHealth), Health); 
 
-        if (Health <= 0) Die();
+            if (Health <= 0) Die();
+        }
+        
     }
 
     [Rpc(MultiplayerApi.RpcMode.AnyPeer, CallLocal = true)]
@@ -101,7 +106,7 @@ public partial class BasicCharacter : CharacterBody2D
         UpdateHealthDisplay(); 
     }
 
-    private void UpdateHealthDisplay()
+    protected void UpdateHealthDisplay()
     {
         if (healthBar != null)
         {
@@ -120,7 +125,7 @@ public partial class BasicCharacter : CharacterBody2D
         QueueFree();
     }
 
-    private void SetAnimationState(AnimationState newState)
+    protected void SetAnimationState(AnimationState newState)
     {
         if (currentAnimationState == newState) return;
         currentAnimationState = newState;
@@ -139,12 +144,15 @@ public partial class BasicCharacter : CharacterBody2D
         UpdateAnimation();
     }
 
-    private void UpdateAnimation()
+    protected void UpdateAnimation()
     {
         string targetAnimation = currentAnimationState switch
         {
             AnimationState.Walk => "Walk",
             AnimationState.Attack => "Attack",
+            AnimationState.Run => "Run",
+            AnimationState.Hurt => "Hurt",
+            AnimationState.Die => "Die",
             _ => "Idle"
         };
 
@@ -154,7 +162,7 @@ public partial class BasicCharacter : CharacterBody2D
         }
     }
 
-    private void OnAnimationFinished()
+    protected void OnAnimationFinished()
     {
         currentAnimationState = Velocity.Length() > 0 ? AnimationState.Walk : AnimationState.Idle;
         UpdateAnimation();
@@ -173,7 +181,7 @@ public partial class BasicCharacter : CharacterBody2D
     }
 
     [Rpc(MultiplayerApi.RpcMode.Authority)]
-    private void Shoot()
+    protected void Shoot()
     {
         GD.Print($"Server shooting bullet for player {Name}");
         if (bulletScene == null || bulletSpawn == null)
@@ -197,7 +205,7 @@ public partial class BasicCharacter : CharacterBody2D
     
 
    [Rpc(MultiplayerApi.RpcMode.AnyPeer)]
-    private void SetPlayerPosition(Vector2 position)
+    protected void SetPlayerPosition(Vector2 position)
     {
         if (!IsMultiplayerAuthority())
         {

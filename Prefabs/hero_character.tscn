@@ -1,4 +1,4 @@
-[gd_scene load_steps=46 format=3 uid="uid://d2yi4qakdybi7"]
+[gd_scene load_steps=45 format=3 uid="uid://d2yi4qakdybi7"]
 
 [ext_resource type="Script" path="res://Scripts/HeroCharacter.cs" id="1_x03yp"]
 [ext_resource type="Texture2D" uid="uid://cgjhrx5wi3je1" path="res://Sprites/hero/Countess_Vampire/Attack_1.png" id="2_e1dd1"]
@@ -8,7 +8,6 @@
 [ext_resource type="Texture2D" uid="uid://b6tpbou5qycrs" path="res://Sprites/hero/Countess_Vampire/Dead.png" id="3_ltlbt"]
 [ext_resource type="Texture2D" uid="uid://bsov50epkkmu4" path="res://Sprites/hero/Countess_Vampire/Run.png" id="4_3sxru"]
 [ext_resource type="Texture2D" uid="uid://bswkrj8d5nllg" path="res://Sprites/hero/Countess_Vampire/Hurt.png" id="4_wfi0l"]
-[ext_resource type="Texture2D" uid="uid://du5mbljcvpvlm" path="res://Sprites/icon.svg" id="9_q7hm3"]
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_8pvhe"]
 atlas = ExtResource("2_e1dd1")
@@ -201,6 +200,9 @@ animations = [{
 "texture": SubResource("AtlasTexture_fibbi")
 }, {
 "duration": 1.0,
+"texture": null
+}, {
+"duration": 1.0,
 "texture": SubResource("AtlasTexture_xk1pc")
 }],
 "loop": false,
@@ -232,23 +234,41 @@ animations = [{
 "texture": SubResource("AtlasTexture_8ystr")
 }, {
 "duration": 1.0,
+"texture": null
+}, {
+"duration": 1.0,
 "texture": SubResource("AtlasTexture_6nqu4")
+}, {
+"duration": 1.0,
+"texture": null
 }, {
 "duration": 1.0,
 "texture": SubResource("AtlasTexture_6ebcm")
 }, {
 "duration": 1.0,
+"texture": null
+}, {
+"duration": 1.0,
 "texture": SubResource("AtlasTexture_vc4hn")
+}, {
+"duration": 1.0,
+"texture": null
 }, {
 "duration": 1.0,
 "texture": SubResource("AtlasTexture_6c0ke")
 }, {
 "duration": 1.0,
+"texture": null
+}, {
+"duration": 1.0,
 "texture": SubResource("AtlasTexture_xnvs0")
+}, {
+"duration": 1.0,
+"texture": null
 }],
-"loop": true,
+"loop": false,
 "name": &"Run",
-"speed": 15.0
+"speed": 10.0
 }, {
 "frames": [{
 "duration": 1.0,
@@ -292,16 +312,10 @@ animatedSprite = NodePath("AnimatedSprite2D")
 
 [node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="."]
 sprite_frames = SubResource("SpriteFrames_1ki6g")
-animation = &"Walk"
-frame = 2
-frame_progress = 0.886098
+animation = &"Run"
 
 [node name="BulletSpawn" type="Marker2D" parent="AnimatedSprite2D"]
 position = Vector2(16, 16)
-
-[node name="Sprite2D" type="Sprite2D" parent="AnimatedSprite2D/BulletSpawn"]
-scale = Vector2(0.1, 0.1)
-texture = ExtResource("9_q7hm3")
 
 [node name="MultiplayerSynchronizer" type="MultiplayerSynchronizer" parent="."]
 replication_config = SubResource("SceneReplicationConfig_t8fe7")
@@ -318,7 +332,8 @@ one_shot = true
 
 [node name="HealthBar" type="ProgressBar" parent="."]
 offset_left = -58.0
-offset_top = -38.0
+offset_top = -18.0
 offset_right = 53.0
 offset_bottom = -11.0
 step = 1.0
+show_percentage = false

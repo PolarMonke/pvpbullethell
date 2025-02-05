@@ -26,6 +26,8 @@ public partial class NetworkingManager : Node
 
         Multiplayer.PeerConnected += OnPeerConnected;
         Multiplayer.PeerDisconnected += OnPeerDisconnected;
+
+        
     }
 
     public void CreateServer()
