@@ -3,10 +3,11 @@ using System;
 using System.Diagnostics.Contracts;
 using System.IO;
 using System.Collections.Generic;
+using System.Collections;
 
 public partial class BossCharacter : BasicCharacter
 {
-	[Export] public float PatternCooldown = 1.0f;
+	[Export] public float PatternCooldown = 3.0f;
     private Timer _patternTimer;
     private List<Action> _shootingPatterns = new List<Action>();
     private int _currentPatternIndex = 0;
@@ -38,6 +39,7 @@ public partial class BossCharacter : BasicCharacter
 			_shootingPatterns.Add(ShootCircle);
 			_shootingPatterns.Add(ShootCross);
 			_shootingPatterns.Add(ShootSpiral);
+			_shootingPatterns.Add(ShootSineWave);
         }
     }
 	private void OnPatternTimerTimeout()
@@ -92,46 +94,80 @@ public partial class BossCharacter : BasicCharacter
         }
     }
 
-	private float _spiralAngle = 0f;
-	private void ShootSpiral()
-	{
-		GD.Print("Shooting Spiral");
-		int bulletCount = 8;
-		_spiralAngle += Mathf.DegToRad(45);
-
-		for (int i = 0; i < bulletCount; i++)
-		{
-			float angle = _spiralAngle + Mathf.DegToRad(i * 45);
-			Vector2 dir = new Vector2(Mathf.Cos(angle), Mathf.Sin(angle));
-			SpawnBullet(dir);
-		}
-		Rpc(nameof(SyncSpiralAngle), _spiralAngle);
-	}
-
-	[Rpc(MultiplayerApi.RpcMode.AnyPeer, CallLocal = true)]
-	private void SyncSpiralAngle(float angle)
-	{
-		_spiralAngle = angle;
-	}
-
 	private void ShootCross()
 	{
 		GD.Print("Shooting Cross");
-
+		RunCoroutine(CrossPattern());
+	}
+	private IEnumerator CrossPattern()
+	{
 		int rowCount = 8;
 		int sideCount = 4;
 
-		for (int i = 0; i < sideCount; i++)
+		for (int i = 0; i < rowCount; i++)
 		{
-			float angle = Mathf.DegToRad(i * 90);
-			for (int j = 0; j < rowCount; j++)
+			float angle = 0.0f;
+			for (int j = 0; j < sideCount; j++)
 			{
+				angle = Mathf.DegToRad(j * 90);
 				Vector2 dir = new Vector2(Mathf.Cos(angle), Mathf.Sin(angle));
 				SpawnBullet(dir);
 			}	
+			yield return ToSignal(GetTree().CreateTimer(0.1), SceneTreeTimer.SignalName.Timeout);
 		}
 	}
 
-    #endregion Shooting Patterns
+	private void ShootSpiral()
+	{
+		GD.Print("Shooting Spiral");
+		RunCoroutine(SpiralPattern());
+	}
+	private IEnumerator SpiralPattern()
+	{
+		int bulletCount = 36;
+		for (int i = 0; i < bulletCount; i++)
+		{
+			float angle = Mathf.DegToRad(i * 10);
+			Vector2 dir = new Vector2(Mathf.Cos(angle), Mathf.Sin(angle));
+			SpawnBullet(dir);
+			yield return ToSignal(GetTree().CreateTimer(0.05), SceneTreeTimer.SignalName.Timeout);
+		}
+	}
 
+	private void ShootSineWave()
+	{
+		GD.Print("Shooting Sine Wave");
+		RunCoroutine(SineWavePattern());
+	}
+
+	private IEnumerator SineWavePattern()
+	{
+		float amplitude = 0.2f;
+		float frequency = 2.0f;
+		float time = 0.0f;
+		int bulletCount = 20;
+
+		Vector2 globalMousePosition = GetGlobalMousePosition();
+		Vector2 baseDirection = (globalMousePosition - GlobalPosition).Normalized();
+
+		for (int i = 0; i < bulletCount; i++)
+		{
+			time += 0.1f;
+			float angleOffset = Mathf.Sin(time * frequency) * amplitude;
+			Vector2 dir = baseDirection.Rotated(angleOffset);
+			SpawnBullet(dir);
+			yield return ToSignal(GetTree().CreateTimer(0.05), SceneTreeTimer.SignalName.Timeout);
+		}
+	}	
+    #endregion Shooting Patterns
+	private async void RunCoroutine(IEnumerator routine)
+    {
+        while (routine.MoveNext())
+        {
+            if (routine.Current is Godot.SignalAwaiter signalAwaiter)
+            {
+                await signalAwaiter;
+            }
+        }
+    }
 }
