@@ -43,27 +43,24 @@ public partial class Bullet : Area2D
 		this.direction = direction;
 	}
 	private void OnBodyEntered(Node body)
-    {
-		GD.Print("Bullet collided");
-        if (_damageApplied) return;
-        if (body is BasicCharacter player)
-        {
-            GD.Print($"Bullet: Collision with player, HolderID = {HolderID}, Player Authority = {player.GetMultiplayerAuthority()}");
+	{
+		if (_damageApplied) return;
 
-            if (player.GetMultiplayerAuthority() != HolderID)
-            {
-                GD.Print("Bullet: Applying damage");
-                player.Rpc(nameof(player.TakeDamage), Damage);
-                _damageApplied = true;
-				this.QueueFree();
-            }
-            else
-            {
-                GD.Print("Bullet: Not applying damage (self-hit)");
-            }
-        }
-    }
-
+		if (body is BasicCharacter player)
+		{
+			if (player.GetMultiplayerAuthority() != HolderID)
+			{
+				//GD.Print("Bullet: Applying damage to player");
+				player.Rpc(nameof(player.TakeDamage), Damage);
+				_damageApplied = true;
+				QueueFree();
+			}
+			else
+			{
+				//GD.Print("Bullet: Not applying damage (self-hit)");
+			}
+		}
+	}
 	private void DestroyBulletAfterTime()
 	{
 		QueueFree();

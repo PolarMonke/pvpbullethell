@@ -21,7 +21,7 @@ public partial class BasicCharacter : CharacterBody2D
     [Export] public AnimatedSprite2D animatedSprite;
 
     [Signal]
-    public delegate void PlayerFiredBulletEventHandler(Area2D bullet, Vector2 postition, Vector2 direction);
+    public delegate void PlayerFiredBulletEventHandler(Area2D bullet, Vector2 postition, Vector2 direction, long holderId);
     protected Vector2 _previousPosition;
 
     protected bool _facingRight = true;
@@ -159,7 +159,7 @@ public partial class BasicCharacter : CharacterBody2D
             bulletScript.SetDirection(directionToMouse);
         }
         GetTree().Root.AddChild(bulletInstance);
-        BulletManager.Instance.HandleBulletSpawned(bulletInstance, bulletInstance.GlobalPosition, directionToMouse);
+        BulletManager.Instance.HandleBulletSpawned(bulletInstance, bulletInstance.GlobalPosition, directionToMouse, Multiplayer.GetUniqueId());
     }
 
     protected void SetAnimationState(AnimationState newState)

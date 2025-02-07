@@ -36,8 +36,8 @@ public partial class BossCharacter : BasicCharacter
 			_patternTimer.Start();
 
 			_shootingPatterns.Add(ShootCircle);
-			//_shootingPatterns.Add(ShootSpray); // Add more patterns here
-			//_shootingPatterns.Add(ShootTargeted);
+			_shootingPatterns.Add(ShootCross);
+			_shootingPatterns.Add(ShootSpiral);
         }
     }
 	private void OnPatternTimerTimeout()
@@ -46,27 +46,21 @@ public partial class BossCharacter : BasicCharacter
         _currentPatternIndex = (_currentPatternIndex + 1) % _shootingPatterns.Count;
     }
 	
-	[Rpc(MultiplayerApi.RpcMode.Authority)]
-    private void SpawnBullet(Vector2 direction)
-    {
-        if (bulletScene == null || bulletSpawn == null)
-        {
-            GD.PrintErr("Assign bullet and bulletSpawn in editor");
-            return;
-        }
+	[Rpc(MultiplayerApi.RpcMode.Authority, CallLocal = true)]
+	private void SpawnBullet(Vector2 direction)
+	{
+		var bulletInstance = bulletScene.Instantiate<Area2D>();
+		bulletInstance.GlobalPosition = bulletSpawn.GlobalPosition;
 
-        Area2D bulletInstance = bulletScene.Instantiate<Area2D>();
-        bulletInstance.GlobalPosition = bulletSpawn.GlobalPosition;
+		var bulletScript = bulletInstance as Bullet;
+		if (bulletScript != null)
+		{
+			bulletScript.HolderID = Multiplayer.GetUniqueId();
+			bulletScript.SetDirection(direction);
+		}
 
-        var bulletScript = bulletInstance as Bullet;
-        if (bulletScript != null)
-        {
-            bulletScript.HolderID = Multiplayer.GetUniqueId();
-            bulletScript.SetDirection(direction);
-        }
-        GetTree().Root.AddChild(bulletInstance);
-        BulletManager.Instance.HandleBulletSpawned(bulletInstance, bulletInstance.GlobalPosition, direction);
-    }
+		BulletManager.Instance.HandleBulletSpawned(bulletInstance, bulletInstance.GlobalPosition, direction, Multiplayer.GetUniqueId());
+	}
     private BasicCharacter FindPlayer()
     {
         foreach (var node in GetTree().GetNodesInGroup("player"))
@@ -83,40 +77,60 @@ public partial class BossCharacter : BasicCharacter
 
     private void ShootCircle()
     {
+		GD.Print("Shooting Circle");
         int bulletCount = 16;
         float angleIncrement = 360f / bulletCount;
 
         for (int i = 0; i < bulletCount; i++)
         {
             float angle = Mathf.DegToRad(i * angleIncrement);
-            Vector2 direction = new Vector2(Mathf.Cos(angle), Mathf.Sin(angle));
-            SpawnBullet(direction);
+            Vector2 dir = new Vector2(Mathf.Cos(angle), Mathf.Sin(angle));
+            if (IsMultiplayerAuthority())
+            {
+                SpawnBullet(dir);
+            }
         }
     }
 
-    private void ShootSpray()
-    {
-        int bulletCount = 5;
-        float angleSpread = Mathf.DegToRad(30);
+	private float _spiralAngle = 0f;
+	private void ShootSpiral()
+	{
+		GD.Print("Shooting Spiral");
+		int bulletCount = 8;
+		_spiralAngle += Mathf.DegToRad(45);
 
-        for (int i = 0; i < bulletCount; i++)
-        {
-            float angle = Mathf.Lerp(-angleSpread / 2, angleSpread / 2, (float)GD.RandRange(0.0f, 1.0f));
-            Vector2 direction = Vector2.Right.Rotated(angle);
+		for (int i = 0; i < bulletCount; i++)
+		{
+			float angle = _spiralAngle + Mathf.DegToRad(i * 45);
+			Vector2 dir = new Vector2(Mathf.Cos(angle), Mathf.Sin(angle));
+			SpawnBullet(dir);
+		}
+		Rpc(nameof(SyncSpiralAngle), _spiralAngle);
+	}
 
-            SpawnBullet(direction);
-        }
-    }
-    
-    private void ShootTargeted()
-    {
-        BasicCharacter player = FindPlayer();
-        if (player != null)
-        {
-            Vector2 direction = bulletSpawn.GlobalPosition.DirectionTo(player.GlobalPosition).Normalized();
-            SpawnBullet(direction);
-        }
-    }
+	[Rpc(MultiplayerApi.RpcMode.AnyPeer, CallLocal = true)]
+	private void SyncSpiralAngle(float angle)
+	{
+		_spiralAngle = angle;
+	}
+
+	private void ShootCross()
+	{
+		GD.Print("Shooting Cross");
+
+		int rowCount = 8;
+		int sideCount = 4;
+
+		for (int i = 0; i < sideCount; i++)
+		{
+			float angle = Mathf.DegToRad(i * 90);
+			for (int j = 0; j < rowCount; j++)
+			{
+				Vector2 dir = new Vector2(Mathf.Cos(angle), Mathf.Sin(angle));
+				SpawnBullet(dir);
+			}	
+		}
+	}
 
     #endregion Shooting Patterns
 
