@@ -8,6 +8,7 @@ radius = 8.0
 
 [node name="Bullet" type="Area2D"]
 script = ExtResource("1_ar7yd")
+LifeTime = 3.0
 
 [node name="Sprite2D" type="Sprite2D" parent="."]
 texture = ExtResource("1_qv64u")

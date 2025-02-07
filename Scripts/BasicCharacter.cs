@@ -24,7 +24,7 @@ public partial class BasicCharacter : CharacterBody2D
     public delegate void PlayerFiredBulletEventHandler(Area2D bullet, Vector2 postition, Vector2 direction);
     protected Vector2 _previousPosition;
 
-    private bool _facingRight = true;
+    protected bool _facingRight = true;
 
     protected enum AnimationState {Idle, Walk, Attack, Run, Hurt, Die}    
     protected AnimationState currentAnimationState = AnimationState.Idle;
@@ -87,6 +87,8 @@ public partial class BasicCharacter : CharacterBody2D
     {
         if (_canBeHurt)
         {
+            SetAnimationState(AnimationState.Hurt);
+
             if (!IsMultiplayerAuthority()) return;
 
             Health -= damage;
@@ -100,7 +102,7 @@ public partial class BasicCharacter : CharacterBody2D
     }
 
     [Rpc(MultiplayerApi.RpcMode.AnyPeer, CallLocal = true)]
-    private void SyncHealth(int newHealth)
+    protected void SyncHealth(int newHealth)
     {
         Health = newHealth;
         UpdateHealthDisplay(); 
@@ -114,60 +116,16 @@ public partial class BasicCharacter : CharacterBody2D
         }
     }
 
-    private void Die()
+    protected void Die()
     {
         Rpc(nameof(DeathEffects));
     }
 
     [Rpc(MultiplayerApi.RpcMode.Authority)]
-    private void DeathEffects()
+    protected void DeathEffects()
     {
         QueueFree();
     }
-
-    protected void SetAnimationState(AnimationState newState)
-    {
-        if (currentAnimationState == newState) return;
-        currentAnimationState = newState;
-
-        if (IsMultiplayerAuthority())
-        {
-            if (Multiplayer.IsServer())
-            {
-                Rpc(nameof(SyncAnimationState), (int)newState);
-            }
-            else
-            {
-                RpcId(1, nameof(ServerSyncAnimation), (int)newState);
-            }
-        }
-        UpdateAnimation();
-    }
-
-    protected void UpdateAnimation()
-    {
-        string targetAnimation = currentAnimationState switch
-        {
-            AnimationState.Walk => "Walk",
-            AnimationState.Attack => "Attack",
-            AnimationState.Run => "Run",
-            AnimationState.Hurt => "Hurt",
-            AnimationState.Die => "Die",
-            _ => "Idle"
-        };
-
-        if (animatedSprite.Animation != targetAnimation || !animatedSprite.IsPlaying())
-        {
-            animatedSprite.Play(targetAnimation);
-        }
-    }
-
-    protected void OnAnimationFinished()
-    {
-        currentAnimationState = Velocity.Length() > 0 ? AnimationState.Walk : AnimationState.Idle;
-        UpdateAnimation();
-    }
-
     public override void _UnhandledInput(InputEvent @event)
     {
         if (@event.IsActionPressed("shoot") && bulletCooldownNode.IsStopped())
@@ -181,7 +139,7 @@ public partial class BasicCharacter : CharacterBody2D
     }
 
     [Rpc(MultiplayerApi.RpcMode.Authority)]
-    protected void Shoot()
+    protected virtual void Shoot()
     {
         GD.Print($"Server shooting bullet for player {Name}");
         if (bulletScene == null || bulletSpawn == null)
@@ -202,9 +160,65 @@ public partial class BasicCharacter : CharacterBody2D
         }
         GetParent().AddChild(bulletInstance);
     }
-    
 
-   [Rpc(MultiplayerApi.RpcMode.AnyPeer)]
+    protected void SetAnimationState(AnimationState newState)
+    {
+        if (currentAnimationState == newState) return;
+        currentAnimationState = newState;
+        UpdateAnimation();
+        if (IsMultiplayerAuthority())
+        {
+            Rpc(nameof(SyncAnimationState), (int)newState);
+        }
+    }
+
+    protected void UpdateAnimation()
+    {
+        string targetAnimation = currentAnimationState switch
+        {
+            AnimationState.Walk => "Walk",
+            AnimationState.Attack => "Attack",
+            AnimationState.Run => "Run",
+            AnimationState.Hurt => "Hurt",
+            AnimationState.Die => "Die",
+            _ => "Idle"
+        };
+        if (animatedSprite.Animation != targetAnimation || !animatedSprite.IsPlaying())
+        {
+            animatedSprite.Play(targetAnimation);
+        }
+    }
+
+    protected void OnAnimationFinished()
+    {
+        currentAnimationState = Velocity.Length() > 0 ? AnimationState.Walk : AnimationState.Idle;
+        UpdateAnimation();
+    }
+
+    [Rpc(MultiplayerApi.RpcMode.AnyPeer)]
+    protected void ServerSyncAnimation(int state)
+    {
+        if (Multiplayer.IsServer())
+        {
+            int senderId = Multiplayer.GetRemoteSenderId();
+            if (senderId == GetMultiplayerAuthority())
+            {
+                Rpc(nameof(SyncAnimationState), state);
+            }
+        }
+    }
+
+    [Rpc(MultiplayerApi.RpcMode.AnyPeer)]
+    protected void SyncAnimationState(int state)
+    {
+        if (!IsMultiplayerAuthority())
+        {
+            currentAnimationState = (AnimationState)state;
+            UpdateAnimation();
+        }
+    }
+
+    [Rpc(MultiplayerApi.RpcMode.AnyPeer)]
     protected void SetPlayerPosition(Vector2 position)
     {
         if (!IsMultiplayerAuthority())
@@ -213,7 +227,7 @@ public partial class BasicCharacter : CharacterBody2D
         }
     }
 
-    private void UpdateFacingDirection()
+    protected void UpdateFacingDirection()
     {
         Vector2 mousePosition = GetGlobalMousePosition();
         float moveInput = Input.GetAxis("ui_left", "ui_right");
@@ -240,36 +254,12 @@ public partial class BasicCharacter : CharacterBody2D
     }
 
     [Rpc(MultiplayerApi.RpcMode.AnyPeer)]
-    private void SetFacingDirection(bool direction, Vector2 position)
+    protected void SetFacingDirection(bool direction, Vector2 position)
     {
         if (!IsMultiplayerAuthority())
         {
             bulletSpawn.Position = position;
             animatedSprite.FlipH = direction;
-        }
-    }
-
-    
-    [Rpc(MultiplayerApi.RpcMode.AnyPeer)]
-    private void ServerSyncAnimation(int state)
-    {
-        if (Multiplayer.IsServer())
-        {
-            int senderId = Multiplayer.GetRemoteSenderId();
-            if (senderId == GetMultiplayerAuthority())
-            {
-                Rpc(nameof(SyncAnimationState), state);
-            }
-        }
-    }
-
-    [Rpc(MultiplayerApi.RpcMode.AnyPeer)]
-    private void SyncAnimationState(int state)
-    {
-        if (!IsMultiplayerAuthority())
-        {
-            currentAnimationState = (AnimationState)state;
-            UpdateAnimation();
         }
     }
 }

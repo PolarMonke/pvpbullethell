@@ -46,7 +46,7 @@ public partial class HeroCharacter : BasicCharacter
         bool isMoving = Velocity.Length() > 0;
         if (_runTimer.IsStopped())
         {
-            if (currentAnimationState != AnimationState.Attack)
+            if (currentAnimationState != AnimationState.Attack && currentAnimationState != AnimationState.Hurt && currentAnimationState != AnimationState.Run)
             {
                 SetAnimationState(isMoving ? AnimationState.Walk : AnimationState.Idle);
             }
@@ -90,6 +90,7 @@ public partial class HeroCharacter : BasicCharacter
     private void Run()
     {
         SetAnimationState(AnimationState.Run);
+        Rpc(nameof(SyncAnimationState), (int)AnimationState.Run);
         _runTimer.Start();
         _speed *= 2;
         _canBeHurt = false;
@@ -97,6 +98,7 @@ public partial class HeroCharacter : BasicCharacter
 
     private void OnRunTimerTimeOut()
     {
+        GD.Print("Таймер бегу скончыўся");
         _speed /= 2;
         _canRun = false;
         _canBeHurt = true;
@@ -105,6 +107,7 @@ public partial class HeroCharacter : BasicCharacter
 
     private void OnRunCooldownTimerTimeOut()
     {
+        GD.Print("Таймер аднаўлення бегу скончыўся");
         _canRun = true;
     }
 }

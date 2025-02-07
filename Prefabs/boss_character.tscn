@@ -1,6 +1,8 @@
-[gd_scene load_steps=48 format=3 uid="uid://d03i2hjl2p5lb"]
+[gd_scene load_steps=50 format=3 uid="uid://d03i2hjl2p5lb"]
 
 [ext_resource type="Texture2D" uid="uid://cxl7feiqu7p3g" path="res://Sprites/boss/Wanderer Magican/Attack_1.png" id="1_4c48n"]
+[ext_resource type="Script" path="res://Scripts/BossCharacter.cs" id="1_8ttk8"]
+[ext_resource type="PackedScene" uid="uid://dh2uvcnuxnr2v" path="res://Prefabs/bullet.tscn" id="2_7e62w"]
 [ext_resource type="Texture2D" uid="uid://h3rkqyxqh2m5" path="res://Sprites/boss/Wanderer Magican/Dead.png" id="2_susch"]
 [ext_resource type="Texture2D" uid="uid://bd8lw1qvvhskh" path="res://Sprites/boss/Wanderer Magican/Hurt.png" id="3_60755"]
 [ext_resource type="Texture2D" uid="uid://d4hn4dnqclssa" path="res://Sprites/boss/Wanderer Magican/Idle.png" id="4_roiv3"]
@@ -314,7 +316,15 @@ properties/0/replication_mode = 1
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_hhcv3"]
 size = Vector2(22.6959, 64.5322)
 
-[node name="BossCharacter" type="CharacterBody2D"]
+[node name="BossCharacter" type="CharacterBody2D" node_paths=PackedStringArray("healthBar", "bulletSpawn", "bulletCooldownNode", "animatedSprite")]
+script = ExtResource("1_8ttk8")
+MaxHealth = 1000
+Health = 1000
+healthBar = NodePath("HealthBar")
+bulletScene = ExtResource("2_7e62w")
+bulletSpawn = NodePath("AnimatedSprite2D/BulletSpawn")
+bulletCooldownNode = NodePath("BulletCooldownNode")
+animatedSprite = NodePath("AnimatedSprite2D")
 
 [node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="."]
 sprite_frames = SubResource("SpriteFrames_qlf1q")
@@ -338,7 +348,7 @@ one_shot = true
 
 [node name="HealthBar" type="ProgressBar" parent="."]
 offset_left = -58.0
-offset_top = -38.0
+offset_top = -18.0
 offset_right = 53.0
 offset_bottom = -11.0
 step = 1.0

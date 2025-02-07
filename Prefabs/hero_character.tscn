@@ -93,27 +93,27 @@ region = Rect2(384, 0, 128, 128)
 atlas = ExtResource("2_wxstl")
 region = Rect2(512, 0, 128, 128)
 
-[sub_resource type="AtlasTexture" id="AtlasTexture_8ystr"]
+[sub_resource type="AtlasTexture" id="AtlasTexture_2ojh7"]
 atlas = ExtResource("4_3sxru")
 region = Rect2(0, 0, 128, 128)
 
-[sub_resource type="AtlasTexture" id="AtlasTexture_6nqu4"]
+[sub_resource type="AtlasTexture" id="AtlasTexture_qrcar"]
 atlas = ExtResource("4_3sxru")
 region = Rect2(128, 0, 128, 128)
 
-[sub_resource type="AtlasTexture" id="AtlasTexture_6ebcm"]
+[sub_resource type="AtlasTexture" id="AtlasTexture_pqffj"]
 atlas = ExtResource("4_3sxru")
 region = Rect2(256, 0, 128, 128)
 
-[sub_resource type="AtlasTexture" id="AtlasTexture_vc4hn"]
+[sub_resource type="AtlasTexture" id="AtlasTexture_g3w5y"]
 atlas = ExtResource("4_3sxru")
 region = Rect2(384, 0, 128, 128)
 
-[sub_resource type="AtlasTexture" id="AtlasTexture_6c0ke"]
+[sub_resource type="AtlasTexture" id="AtlasTexture_vflfo"]
 atlas = ExtResource("4_3sxru")
 region = Rect2(512, 0, 128, 128)
 
-[sub_resource type="AtlasTexture" id="AtlasTexture_xnvs0"]
+[sub_resource type="AtlasTexture" id="AtlasTexture_c3055"]
 atlas = ExtResource("4_3sxru")
 region = Rect2(640, 0, 128, 128)
 
@@ -231,37 +231,37 @@ animations = [{
 }, {
 "frames": [{
 "duration": 1.0,
-"texture": SubResource("AtlasTexture_8ystr")
+"texture": SubResource("AtlasTexture_2ojh7")
 }, {
 "duration": 1.0,
 "texture": null
 }, {
 "duration": 1.0,
-"texture": SubResource("AtlasTexture_6nqu4")
+"texture": SubResource("AtlasTexture_qrcar")
 }, {
 "duration": 1.0,
 "texture": null
 }, {
 "duration": 1.0,
-"texture": SubResource("AtlasTexture_6ebcm")
+"texture": SubResource("AtlasTexture_pqffj")
 }, {
 "duration": 1.0,
 "texture": null
 }, {
 "duration": 1.0,
-"texture": SubResource("AtlasTexture_vc4hn")
+"texture": SubResource("AtlasTexture_g3w5y")
 }, {
 "duration": 1.0,
 "texture": null
 }, {
 "duration": 1.0,
-"texture": SubResource("AtlasTexture_6c0ke")
+"texture": SubResource("AtlasTexture_vflfo")
 }, {
 "duration": 1.0,
 "texture": null
 }, {
 "duration": 1.0,
-"texture": SubResource("AtlasTexture_xnvs0")
+"texture": SubResource("AtlasTexture_c3055")
 }, {
 "duration": 1.0,
 "texture": null
@@ -312,7 +312,7 @@ animatedSprite = NodePath("AnimatedSprite2D")
 
 [node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="."]
 sprite_frames = SubResource("SpriteFrames_1ki6g")
-animation = &"Run"
+animation = &"Attack"
 
 [node name="BulletSpawn" type="Marker2D" parent="AnimatedSprite2D"]
 position = Vector2(16, 16)

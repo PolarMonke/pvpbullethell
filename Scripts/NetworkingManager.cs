@@ -6,7 +6,10 @@ public partial class NetworkingManager : Node
     public static NetworkingManager Instance { get; private set; }
 
     [Export] private int _port = 135;
-    [Export] private PackedScene playerScene;
+    [Export] private PackedScene heroScene;
+    [Export] private PackedScene bossScene;
+
+    private bool _playerClass = false; //false - hero, true - boss for now
 
     private ENetMultiplayerPeer _peer = new ENetMultiplayerPeer();
 
@@ -32,6 +35,8 @@ public partial class NetworkingManager : Node
 
     public void CreateServer()
     {
+        _playerClass = true; //Host is boss
+
         GD.Print("Starting server");
         _peer.CreateServer(_port);
         Multiplayer.MultiplayerPeer = _peer;
@@ -41,6 +46,8 @@ public partial class NetworkingManager : Node
 
     public void JoinServer(string address)
     {
+        _playerClass = false; //Joined is hero
+
         GD.Print("Attempting to connect to " + address);
         _peer.CreateClient(address, _port);
         Multiplayer.MultiplayerPeer = _peer;
@@ -82,7 +89,8 @@ public partial class NetworkingManager : Node
 
     private void _addPlayer(int id)
     {
-        if (playerScene == null)
+        if (heroScene
+ == null)
         {
             GD.PrintErr("Error: Player scene not assigned.");
             return;
@@ -92,9 +100,10 @@ public partial class NetworkingManager : Node
 
         GD.Print($"_addPlayer called, id = {id}, Server = {Multiplayer.IsServer()}");
         
-        Node2D player = playerScene.Instantiate() as Node2D;
+        Node2D player = _playerClass ? bossScene.Instantiate() as Node2D : heroScene.Instantiate() as Node2D;
+        _playerClass = !_playerClass; //very hardcoded but okay for now
 
-        if (player is BasicCharacter playerScript)
+        if (player is HeroCharacter playerScript)
         {
             playerScript.PlayerFiredBullet += BulletManager.Instance.HandleBulletSpawned;
         }

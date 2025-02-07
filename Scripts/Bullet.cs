@@ -45,8 +45,8 @@ public partial class Bullet : Area2D
 
 	private void OnBodyEntered(Node body)
     {
-        if (_damageApplied) return;
 		GD.Print("Bullet collided");
+        if (_damageApplied) return;
         if (body is BasicCharacter player)
         {
             GD.Print($"Bullet: Collision with player, HolderID = {HolderID}, Player Authority = {player.GetMultiplayerAuthority()}");
