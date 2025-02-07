@@ -214,6 +214,9 @@ animations = [{
 "texture": SubResource("AtlasTexture_4n0yv")
 }, {
 "duration": 1.0,
+"texture": null
+}, {
+"duration": 1.0,
 "texture": SubResource("AtlasTexture_ap6v6")
 }, {
 "duration": 1.0,
@@ -221,7 +224,7 @@ animations = [{
 }],
 "loop": false,
 "name": &"Hurt",
-"speed": 5.0
+"speed": 20.0
 }, {
 "frames": [{
 "duration": 1.0,
@@ -328,7 +331,7 @@ animatedSprite = NodePath("AnimatedSprite2D")
 
 [node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="."]
 sprite_frames = SubResource("SpriteFrames_qlf1q")
-animation = &"Walk"
+animation = &"Hurt"
 
 [node name="BulletSpawn" type="Marker2D" parent="AnimatedSprite2D"]
 position = Vector2(16, 16)

@@ -98,7 +98,7 @@ public partial class HeroCharacter : BasicCharacter
 
     private void OnRunTimerTimeOut()
     {
-        GD.Print("Таймер бегу скончыўся");
+        GD.Print("Run timer ran out");
         _speed /= 2;
         _canRun = false;
         _canBeHurt = true;
@@ -107,7 +107,8 @@ public partial class HeroCharacter : BasicCharacter
 
     private void OnRunCooldownTimerTimeOut()
     {
-        GD.Print("Таймер аднаўлення бегу скончыўся");
+        GD.Print("Run cooldown timer ran out");
         _canRun = true;
     }
+
 }

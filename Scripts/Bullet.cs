@@ -56,13 +56,12 @@ public partial class Bullet : Area2D
                 GD.Print("Bullet: Applying damage");
                 player.Rpc(nameof(player.TakeDamage), Damage);
                 _damageApplied = true;
+				this.QueueFree();
             }
             else
             {
                 GD.Print("Bullet: Not applying damage (self-hit)");
             }
-            this.QueueFree();
-			//SetDeferred("free", 1);
         }
     }
 

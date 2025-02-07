@@ -26,8 +26,8 @@ public partial class BulletManager : Node2D
             return;
         }
 
-        AddChild(bullet);
-        bullet.GlobalPosition = position;
+        //AddChild(bullet); // Remove this line
+        //bullet.GlobalPosition = position; // Remove this line
 
         var bulletScript = bullet.GetNode<Bullet>(".");
         if (bulletScript != null)
@@ -40,19 +40,15 @@ public partial class BulletManager : Node2D
             GD.PrintErr("Bullet script not found");
         }
 
-        if (Multiplayer.IsServer())
-        {
-            Rpc(nameof(ClientSpawnBullet), position, direction);
-        }
+        Rpc(nameof(SpawnBulletOnClients), position, direction);
     }
 
-    [Rpc(MultiplayerApi.RpcMode.Authority)]
-    private void ClientSpawnBullet(Vector2 position, Vector2 direction)
+    [Rpc(MultiplayerApi.RpcMode.AnyPeer)]
+    private void SpawnBulletOnClients(Vector2 position, Vector2 direction)
     {
-        if (Multiplayer.IsServer()) return;
-
         var bulletInstance = bulletScene.Instantiate<Area2D>();
-        AddChild(bulletInstance);
+        GetTree().Root.AddChild(bulletInstance);
+
         bulletInstance.GlobalPosition = position;
 
         var bulletScript = bulletInstance.GetNode<Bullet>(".");
@@ -61,16 +57,5 @@ public partial class BulletManager : Node2D
             bulletScript.SetDirection(direction);
         }
     }
-
-    [Rpc(MultiplayerApi.RpcMode.Authority)]
-
-    public void SpawnBullet(Area2D bulletInstance, Vector2 position, Vector2 direction)
-    {
-        AddChild(bulletInstance);
-        bulletInstance.GlobalPosition = position;
-        if (bulletInstance is Bullet bulletScript)
-        {
-            bulletScript.SetDirection(direction);
-        }
-    }
 }
+

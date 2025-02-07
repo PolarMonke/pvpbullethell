@@ -57,7 +57,7 @@ public partial class BasicCharacter : CharacterBody2D
     protected virtual void Walk()
     {
         bool isMoving = Velocity.Length() > 0;
-        if (currentAnimationState != AnimationState.Attack)
+        if (currentAnimationState != AnimationState.Attack && currentAnimationState != AnimationState.Hurt)
         {
             SetAnimationState(isMoving ? AnimationState.Walk : AnimationState.Idle);
         }
@@ -158,7 +158,8 @@ public partial class BasicCharacter : CharacterBody2D
             bulletScript.HolderID = Multiplayer.GetUniqueId();
             bulletScript.SetDirection(directionToMouse);
         }
-        GetParent().AddChild(bulletInstance);
+        GetTree().Root.AddChild(bulletInstance);
+        BulletManager.Instance.HandleBulletSpawned(bulletInstance, bulletInstance.GlobalPosition, directionToMouse);
     }
 
     protected void SetAnimationState(AnimationState newState)

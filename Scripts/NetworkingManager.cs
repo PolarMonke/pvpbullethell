@@ -103,7 +103,7 @@ public partial class NetworkingManager : Node
         Node2D player = _playerClass ? bossScene.Instantiate() as Node2D : heroScene.Instantiate() as Node2D;
         _playerClass = !_playerClass; //very hardcoded but okay for now
 
-        if (player is HeroCharacter playerScript)
+        if (player is BasicCharacter playerScript)
         {
             playerScript.PlayerFiredBullet += BulletManager.Instance.HandleBulletSpawned;
         }
