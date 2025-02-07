@@ -42,7 +42,6 @@ public partial class Bullet : Area2D
 	{
 		this.direction = direction;
 	}
-
 	private void OnBodyEntered(Node body)
     {
 		GD.Print("Bullet collided");
