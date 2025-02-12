@@ -1,11 +1,8 @@
-[gd_scene load_steps=7 format=3 uid="uid://chdhfutfrrjjg"]
+[gd_scene load_steps=4 format=3 uid="uid://chdhfutfrrjjg"]
 
 [ext_resource type="Script" path="res://Scripts/MultiplayerTest.cs" id="1_0wj3n"]
 [ext_resource type="PackedScene" uid="uid://dkvqs8cedf5j0" path="res://Prefabs/bullet_manager.tscn" id="2_xe5ip"]
 [ext_resource type="PackedScene" uid="uid://dh2uvcnuxnr2v" path="res://Prefabs/bullet.tscn" id="3_hgol6"]
-[ext_resource type="PackedScene" uid="uid://h3al73hpst5k" path="res://Prefabs/networking_manager.tscn" id="4_dh2fp"]
-[ext_resource type="PackedScene" uid="uid://d2yi4qakdybi7" path="res://Prefabs/hero_character.tscn" id="5_e0tp4"]
-[ext_resource type="PackedScene" uid="uid://d03i2hjl2p5lb" path="res://Prefabs/boss_character.tscn" id="6_y4q7i"]
 
 [node name="MultiplayerTest" type="Node2D"]
 script = ExtResource("1_0wj3n")
@@ -35,10 +32,6 @@ metadata/_edit_use_anchors_ = true
 [node name="MultiplayerSpawner" type="MultiplayerSpawner" parent="."]
 _spawnable_scenes = PackedStringArray("res://Prefabs/basic_character.tscn")
 spawn_path = NodePath("..")
-
-[node name="NetworkingManager" parent="." instance=ExtResource("4_dh2fp")]
-heroScene = ExtResource("5_e0tp4")
-bossScene = ExtResource("6_y4q7i")
 
 [connection signal="pressed" from="HostButton" to="." method="_OnHostButtonPressed"]
 [connection signal="pressed" from="JoinButton" to="." method="_OnJoinButtonPressed"]

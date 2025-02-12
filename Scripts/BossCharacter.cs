@@ -27,7 +27,7 @@ public partial class BossCharacter : BasicCharacter
             UpdateHealthDisplay();
 
             animatedSprite.AnimationFinished += OnAnimationFinished;
-            ///////////////////////////
+            ///////////////////////////I could just use base
 
 			_patternTimer = new Timer();
 			_patternTimer.WaitTime = PatternCooldown;
@@ -40,6 +40,7 @@ public partial class BossCharacter : BasicCharacter
 			_shootingPatterns.Add(ShootCross);
 			_shootingPatterns.Add(ShootSpiral);
 			_shootingPatterns.Add(ShootSineWave);
+			_shootingPatterns.Add(ShootSun);
         }
     }
 	private void OnPatternTimerTimeout()
@@ -133,6 +134,28 @@ public partial class BossCharacter : BasicCharacter
 			yield return ToSignal(GetTree().CreateTimer(0.05), SceneTreeTimer.SignalName.Timeout);
 		}
 	}
+
+	private void ShootSun()
+	{
+		GD.Print("Shooting Sun");
+		RunCoroutine(SunPattern());
+	}
+	private IEnumerator SunPattern() 
+	{
+		int bulletCount = 18;
+		int sides = 4;
+		for (int i = 0; i < bulletCount; i++)
+		{
+			for (int j = 0; j < sides; j++)
+			{
+				float angle = Mathf.DegToRad(i * 10 + j * 90);
+				Vector2 dir = new Vector2(Mathf.Cos(angle), Mathf.Sin(angle));
+				SpawnBullet(dir);
+			}
+			yield return ToSignal(GetTree().CreateTimer(0.05), SceneTreeTimer.SignalName.Timeout);
+		}
+	}
+
 
 	private void ShootSineWave()
 	{

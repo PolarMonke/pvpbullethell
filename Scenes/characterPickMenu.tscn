@@ -1,0 +1,82 @@
+[gd_scene load_steps=4 format=3 uid="uid://b1i2pn1pdu3bo"]
+
+[ext_resource type="Script" path="res://Scripts/Menus/CharacterPickMenu.cs" id="1_1suvj"]
+[ext_resource type="PackedScene" uid="uid://cg4gxdcialyvc" path="res://Prefabs/radio_button.tscn" id="1_n1h6h"]
+[ext_resource type="PackedScene" uid="uid://bcpx8ugq5rrwm" path="res://Scenes/mainScene.tscn" id="2_jj1xc"]
+
+[node name="CharacterPickMenu" type="Control" node_paths=PackedStringArray("_playersList", "_radioButtonsHolder", "_readyButton")]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_1suvj")
+_nextScene = ExtResource("2_jj1xc")
+_playersList = NodePath("PlayersList")
+_radioButtonsHolder = NodePath("RadioButtons")
+_readyButton = NodePath("ReadyButton")
+
+[node name="ReadyButton" type="Button" parent="."]
+custom_minimum_size = Vector2(100, 0)
+layout_mode = 1
+anchors_preset = 7
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+offset_left = -48.0
+offset_top = -76.0
+offset_right = 52.0
+offset_bottom = -45.0
+grow_horizontal = 2
+grow_vertical = 0
+text = "READY"
+
+[node name="RadioButtons" type="Control" parent="."]
+custom_minimum_size = Vector2(300, 200)
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="Boss" parent="RadioButtons" instance=ExtResource("1_n1h6h")]
+layout_mode = 1
+anchors_preset = 6
+anchor_left = 1.0
+anchor_top = 0.5
+anchor_right = 1.0
+anchor_bottom = 0.5
+offset_left = -69.0
+offset_top = -15.5
+offset_right = 0.0
+offset_bottom = 15.5
+grow_horizontal = 0
+grow_vertical = 2
+text = "BOSS"
+
+[node name="Hero" parent="RadioButtons" instance=ExtResource("1_n1h6h")]
+layout_mode = 1
+anchors_preset = 4
+anchor_top = 0.5
+anchor_bottom = 0.5
+offset_top = -15.5
+offset_right = 72.0
+offset_bottom = 15.5
+grow_vertical = 2
+text = "HERO"
+
+[node name="PlayersList" type="ItemList" parent="."]
+custom_minimum_size = Vector2(400, 150)
+layout_mode = 1
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -20.0
+offset_right = 20.0
+offset_bottom = 40.0
+grow_horizontal = 2

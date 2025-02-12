@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using Godot;
 
 public partial class NetworkingManager : Node
@@ -9,8 +10,7 @@ public partial class NetworkingManager : Node
     [Export] private PackedScene heroScene;
     [Export] private PackedScene bossScene;
 
-    private bool _playerClass = false; //false - hero, true - boss for now
-
+    public bool PlayerClass = false; //false - hero, true - boss for now
     private ENetMultiplayerPeer _peer = new ENetMultiplayerPeer();
 
     private Dictionary<int, Node2D> playerNodes = new Dictionary<int, Node2D>();
@@ -29,25 +29,19 @@ public partial class NetworkingManager : Node
 
         Multiplayer.PeerConnected += OnPeerConnected;
         Multiplayer.PeerDisconnected += OnPeerDisconnected;
-
-        
     }
 
     public void CreateServer()
     {
-        _playerClass = true; //Host is boss
-
         GD.Print("Starting server");
         _peer.CreateServer(_port);
         Multiplayer.MultiplayerPeer = _peer;
-        _createPlayer(Multiplayer.GetUniqueId());
+        //_createPlayer(Multiplayer.GetUniqueId());
         GD.Print("Server Started");
     }
 
     public void JoinServer(string address)
     {
-        _playerClass = false; //Joined is hero
-
         GD.Print("Attempting to connect to " + address);
         _peer.CreateClient(address, _port);
         Multiplayer.MultiplayerPeer = _peer;
@@ -68,11 +62,11 @@ public partial class NetworkingManager : Node
                 }
             }
            
-            _createPlayer((int)id);
+            //_createPlayer((int)id);
         }
         else
         {
-           _createPlayer(Multiplayer.GetUniqueId());
+           //_createPlayer(Multiplayer.GetUniqueId());
         }
     }
 
@@ -100,8 +94,8 @@ public partial class NetworkingManager : Node
 
         GD.Print($"_addPlayer called, id = {id}, Server = {Multiplayer.IsServer()}");
         
-        Node2D player = _playerClass ? bossScene.Instantiate() as Node2D : heroScene.Instantiate() as Node2D;
-        _playerClass = !_playerClass; //very hardcoded but okay for now
+        Node2D player = PlayerClass ? bossScene.Instantiate() as Node2D : heroScene.Instantiate() as Node2D;
+        PlayerClass = !PlayerClass; //very hardcoded but okay for now
 
         if (player is BasicCharacter playerScript)
         {
@@ -142,4 +136,10 @@ public partial class NetworkingManager : Node
             GD.Print($"Syncing player pos {playerId}, pos = {position}");
         }
     }
+
+    public long[] GetConnectedPeers()
+    {
+        return Multiplayer.GetPeers().Select(peer => (long)peer).ToArray();
+    }
+
 }

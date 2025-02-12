@@ -1,7 +1,6 @@
-[gd_scene load_steps=3 format=3 uid="uid://cpmk7bcigbad1"]
+[gd_scene load_steps=2 format=3 uid="uid://cpmk7bcigbad1"]
 
 [ext_resource type="Script" path="res://Scripts/Menus/MainMenu.cs" id="1_s2ch6"]
-[ext_resource type="PackedScene" uid="uid://h3al73hpst5k" path="res://Prefabs/networking_manager.tscn" id="2_csy07"]
 
 [node name="MainMenu" type="Control"]
 layout_mode = 3
@@ -11,8 +10,6 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 script = ExtResource("1_s2ch6")
-
-[node name="NetworkingManager" parent="." instance=ExtResource("2_csy07")]
 
 [node name="HostButton" type="Button" parent="."]
 custom_minimum_size = Vector2(200, 50)
