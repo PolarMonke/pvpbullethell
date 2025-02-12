@@ -3,8 +3,6 @@ using System;
 
 public partial class RadioButton : CheckBox
 {
-    [Export] public string RadioGroupID;
-
     public override void _Ready()
     {
         Toggled += OnToggled;
@@ -12,20 +10,31 @@ public partial class RadioButton : CheckBox
 
     private void OnToggled(bool buttonPressed)
     {
-        if (!IsMultiplayerAuthority())
-		{
-			return;
-		}
-        Rpc(nameof(RemoteInvertSelection), RadioGroupID, buttonPressed);
+        if (buttonPressed)
+        {
+            foreach (Node child in GetParent().GetChildren())
+            {
+                if (child is RadioButton otherRadioButton && otherRadioButton != this)
+                {
+                    otherRadioButton.ButtonPressed = false;
+                }
+            }
+            Rpc(nameof(RemoteUpdateSelection), Multiplayer.GetUniqueId(), Name);
+        }
     }
 
     [Rpc(MultiplayerApi.RpcMode.AnyPeer)]
-    private void RemoteInvertSelection(string targetRadioGroupID, bool senderState)
+    private void RemoteUpdateSelection(long senderID, string selectedButtonName)
     {
-        if (RadioGroupID == targetRadioGroupID)
-		{
-			return;
-		}
-        ButtonPressed = !senderState;
+        if (Multiplayer.GetUniqueId() != senderID)
+        {
+            foreach (Node child in GetParent().GetChildren())
+            {
+                if (child is RadioButton otherRadioButton)
+                {
+                    otherRadioButton.ButtonPressed = !(otherRadioButton.Name == selectedButtonName);
+                }
+            }
+        }
     }
 }

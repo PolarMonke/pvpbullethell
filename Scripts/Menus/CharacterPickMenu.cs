@@ -45,26 +45,32 @@ public partial class CharacterPickMenu : Control
         if (chosenButton == null)
         {
             GD.PrintErr("No option chosen");
+			_characterChosen = false;
             return;
         }
         if (chosenButton.Name == "Boss")
         {
 			NetworkingManager.Instance.PlayerClass = true; //false - hero, true - boss for now
             GD.Print("Boss chosen");
+			_characterChosen = true;
         }
         if (chosenButton.Name == "Hero")
         {
 			NetworkingManager.Instance.PlayerClass = false;
             GD.Print("Hero chosen");
+			_characterChosen = true;
         }
-		_characterChosen = true;
+		
     }
 
 	public void OnReadyButtonPressed()
 	{
 		if (_characterChosen)
 		{
+
 			GetTree().ChangeSceneToPacked(_nextScene);
 		}
 	}
+
+	
 }
