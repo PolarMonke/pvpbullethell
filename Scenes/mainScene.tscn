@@ -1,3 +1,23 @@
-[gd_scene format=3 uid="uid://bcpx8ugq5rrwm"]
+[gd_scene load_steps=7 format=3 uid="uid://bcpx8ugq5rrwm"]
 
-[node name="2DScene" type="Node2D"]
+[ext_resource type="Script" path="res://Scripts/MainScene.cs" id="1_4241r"]
+[ext_resource type="PackedScene" uid="uid://dkvqs8cedf5j0" path="res://Prefabs/bullet_manager.tscn" id="2_lu1tw"]
+[ext_resource type="Script" path="res://Scripts/SpawnManager.cs" id="2_xllmw"]
+[ext_resource type="PackedScene" uid="uid://d2yi4qakdybi7" path="res://Prefabs/hero_character.tscn" id="3_d7k4p"]
+[ext_resource type="PackedScene" uid="uid://dh2uvcnuxnr2v" path="res://Prefabs/bullet.tscn" id="3_s0tws"]
+[ext_resource type="PackedScene" uid="uid://d03i2hjl2p5lb" path="res://Prefabs/boss_character.tscn" id="4_d5a8v"]
+
+[node name="MainScene" type="Node2D"]
+script = ExtResource("1_4241r")
+
+[node name="SpawnManager" type="Node2D" parent="."]
+script = ExtResource("2_xllmw")
+heroScene = ExtResource("3_d7k4p")
+bossScene = ExtResource("4_d5a8v")
+
+[node name="BulletManager" parent="." instance=ExtResource("2_lu1tw")]
+bulletScene = ExtResource("3_s0tws")
+
+[node name="MultiplayerSpawner" type="MultiplayerSpawner" parent="."]
+_spawnable_scenes = PackedStringArray("res://Prefabs/basic_character.tscn")
+spawn_path = NodePath("..")

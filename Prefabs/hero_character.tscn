@@ -1,4 +1,4 @@
-[gd_scene load_steps=45 format=3 uid="uid://d2yi4qakdybi7"]
+[gd_scene load_steps=46 format=3 uid="uid://d2yi4qakdybi7"]
 
 [ext_resource type="Script" path="res://Scripts/HeroCharacter.cs" id="1_x03yp"]
 [ext_resource type="Texture2D" uid="uid://cgjhrx5wi3je1" path="res://Sprites/hero/Countess_Vampire/Attack_1.png" id="2_e1dd1"]
@@ -8,6 +8,7 @@
 [ext_resource type="Texture2D" uid="uid://b6tpbou5qycrs" path="res://Sprites/hero/Countess_Vampire/Dead.png" id="3_ltlbt"]
 [ext_resource type="Texture2D" uid="uid://bsov50epkkmu4" path="res://Sprites/hero/Countess_Vampire/Run.png" id="4_3sxru"]
 [ext_resource type="Texture2D" uid="uid://bswkrj8d5nllg" path="res://Sprites/hero/Countess_Vampire/Hurt.png" id="4_wfi0l"]
+[ext_resource type="Texture2D" uid="uid://du5mbljcvpvlm" path="res://Sprites/icon.svg" id="9_p2a1l"]
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_8pvhe"]
 atlas = ExtResource("2_e1dd1")
@@ -300,7 +301,7 @@ properties/0/spawn = true
 properties/0/replication_mode = 1
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_5ujdw"]
-size = Vector2(22.6959, 64.5322)
+size = Vector2(11.8413, 11.9136)
 
 [node name="HeroCharacter" type="CharacterBody2D" node_paths=PackedStringArray("healthBar", "bulletSpawn", "bulletCooldownNode", "animatedSprite")]
 script = ExtResource("1_x03yp")
@@ -321,11 +322,16 @@ position = Vector2(16, 16)
 replication_config = SubResource("SceneReplicationConfig_t8fe7")
 
 [node name="Hitbox" type="CollisionShape2D" parent="."]
-position = Vector2(-3.5, 27.5)
+position = Vector2(5.96046e-08, 33)
 scale = Vector2(1.0134, 1.00725)
 shape = SubResource("RectangleShape2D_5ujdw")
 one_way_collision_margin = 0.0
 debug_color = Color(1, 0.270588, 0.756863, 0.482353)
+
+[node name="Sprite2D" type="Sprite2D" parent="Hitbox"]
+position = Vector2(4.02331e-07, -7.15256e-07)
+scale = Vector2(0.0925104, 0.0930752)
+texture = ExtResource("9_p2a1l")
 
 [node name="BulletCooldownNode" type="Timer" parent="."]
 one_shot = true

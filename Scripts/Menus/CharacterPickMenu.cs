@@ -67,7 +67,6 @@ public partial class CharacterPickMenu : Control
 	{
 		if (_characterChosen)
 		{
-
 			GetTree().ChangeSceneToPacked(_nextScene);
 		}
 	}

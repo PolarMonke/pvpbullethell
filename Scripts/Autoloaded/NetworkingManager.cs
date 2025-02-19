@@ -13,8 +13,8 @@ public partial class NetworkingManager : Node
     public bool PlayerClass = false; //false - hero, true - boss for now
     private ENetMultiplayerPeer _peer = new ENetMultiplayerPeer();
 
-    private Dictionary<int, Node2D> playerNodes = new Dictionary<int, Node2D>();
-    private List<int> playerIds = new List<int>();
+    private Dictionary<long, Node2D> playerNodes = new Dictionary<long, Node2D>();
+    public List<long> playerIds = new List<long>();
 
     public override void _Ready()
     {
@@ -47,6 +47,31 @@ public partial class NetworkingManager : Node
         Multiplayer.MultiplayerPeer = _peer;
         GD.Print("Client connecting to " + address);
     }
+
+	public void SpawnHost()
+	{
+		_createPlayer(Multiplayer.GetUniqueId());
+	}
+	public void SpawnPlayer(long id)
+	{
+		if (Multiplayer.IsServer())
+        {
+            foreach (int playerId in playerIds)
+            {
+                if (playerId != (int)id)
+                {
+                  RpcId((int)id, nameof(_createPlayer), playerId);
+                  RpcId((int)id, nameof(_SyncPlayerPosition), playerId, playerNodes[playerId].Position);
+                }
+            }
+           
+            _createPlayer((int)id);
+        }
+        else
+        {
+           _createPlayer(Multiplayer.GetUniqueId());
+        }
+	}
 
     private void OnPeerConnected(long id)
     {
@@ -128,7 +153,7 @@ public partial class NetworkingManager : Node
     }
 
     [Rpc(MultiplayerApi.RpcMode.AnyPeer)]
-    private void _SyncPlayerPosition(int playerId, Vector2 position)
+    public void _SyncPlayerPosition(int playerId, Vector2 position)
     {
         if (playerNodes.ContainsKey(playerId))
         {
