@@ -34,7 +34,7 @@ public partial class CharacterPickMenu : Control
 
     public override void _Process(double delta)
     {
-        GD.Print(string.Join( " ", NetworkingManager.Instance.playerIds ));
+        //GD.Print(string.Join( " ", NetworkingManager.Instance.playerIds ));
         UpdatePlayersList();
     }
 
@@ -81,10 +81,17 @@ public partial class CharacterPickMenu : Control
             bool allReady = NetworkingManager.Instance.playerIds.All(peerId => _playersStates.ContainsKey(peerId) && _playersStates[peerId]);
             if (allReady)
             {
-                GetTree().ChangeSceneToPacked(_nextScene);
+                Rpc(nameof(BeginGame));
+                BeginGame();
             }
 		}
 	}
+
+    [Rpc(MultiplayerApi.RpcMode.AnyPeer)]
+    private void BeginGame()
+    {
+        GetTree().ChangeSceneToPacked(_nextScene);
+    }
 
     [Rpc(MultiplayerApi.RpcMode.AnyPeer)]
     private void SyncPlayerStates(Godot.Collections.Dictionary<long, bool> syncedPlayerStates)
