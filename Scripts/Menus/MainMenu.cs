@@ -3,8 +3,8 @@ using System;
 
 public partial class MainMenu : Control
 {
-    [Export] private PackedScene _nextScene; //character scene
-	public void _OnHostButtonPressed()
+    [Export] private PackedScene _nextScene; 
+    public void _OnHostButtonPressed()
     {
         NetworkingManager.Instance.CreateServer();
         GetTree().ChangeSceneToPacked(_nextScene);

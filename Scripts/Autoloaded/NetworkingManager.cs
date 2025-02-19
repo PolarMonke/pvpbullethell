@@ -13,7 +13,7 @@ public partial class NetworkingManager : Node
     public bool PlayerClass = false; //false - hero, true - boss for now
     private ENetMultiplayerPeer _peer = new ENetMultiplayerPeer();
 
-    private Dictionary<long, Node2D> playerNodes = new Dictionary<long, Node2D>();
+    public Dictionary<long, Node2D> playerNodes = new Dictionary<long, Node2D>();
     public List<long> playerIds = new List<long>();
 
     public override void _Ready()
@@ -36,7 +36,7 @@ public partial class NetworkingManager : Node
         GD.Print("Starting server");
         _peer.CreateServer(_port);
         Multiplayer.MultiplayerPeer = _peer;
-        //_createPlayer(Multiplayer.GetUniqueId());
+        _addPlayerID(Multiplayer.GetUniqueId());
         GD.Print("Server Started");
     }
 
@@ -47,53 +47,15 @@ public partial class NetworkingManager : Node
         Multiplayer.MultiplayerPeer = _peer;
         GD.Print("Client connecting to " + address);
     }
-
-	public void SpawnHost()
-	{
-		_createPlayer(Multiplayer.GetUniqueId());
-	}
-	public void SpawnPlayer(long id)
-	{
-		if (Multiplayer.IsServer())
-        {
-            foreach (int playerId in playerIds)
-            {
-                if (playerId != (int)id)
-                {
-                  RpcId((int)id, nameof(_createPlayer), playerId);
-                  RpcId((int)id, nameof(_SyncPlayerPosition), playerId, playerNodes[playerId].Position);
-                }
-            }
-           
-            _createPlayer((int)id);
-        }
-        else
-        {
-           _createPlayer(Multiplayer.GetUniqueId());
-        }
-	}
-
     private void OnPeerConnected(long id)
+{
+    GD.Print($"Peer connected: {id}");
+    if (Multiplayer.IsServer())
     {
-        GD.Print($"Peer connected: {id}");
-        if (Multiplayer.IsServer())
-        {
-            foreach (int playerId in playerIds)
-            {
-                if (playerId != (int)id)
-                {
-                  RpcId((int)id, nameof(_createPlayer), playerId);
-                  RpcId((int)id, nameof(_SyncPlayerPosition), playerId, playerNodes[playerId].Position);
-                }
-            }
-           
-            //_createPlayer((int)id);
-        }
-        else
-        {
-           //_createPlayer(Multiplayer.GetUniqueId());
-        }
+        _addPlayerID((int)id);
+        RpcId(id, nameof(SyncPlayerIDs), playerIds.ToArray());
     }
+}
 
     private void OnPeerDisconnected(long id)
     {
@@ -105,51 +67,20 @@ public partial class NetworkingManager : Node
             playerIds.Remove((int)id);
         }
     }
-
-    private void _addPlayer(int id)
+    [Rpc(MultiplayerApi.RpcMode.Authority)]
+    private void _addPlayerID(long id)
     {
-        if (heroScene
- == null)
+        if (!playerIds.Contains(id))
         {
-            GD.PrintErr("Error: Player scene not assigned.");
-            return;
+            playerIds.Add(id);
+            Rpc(nameof(SyncPlayerIDs), playerIds.ToArray());
         }
-    
-        if (playerNodes.ContainsKey(id)) return;
-
-        GD.Print($"_addPlayer called, id = {id}, Server = {Multiplayer.IsServer()}");
-        
-        Node2D player = PlayerClass ? bossScene.Instantiate() as Node2D : heroScene.Instantiate() as Node2D;
-        PlayerClass = !PlayerClass; //very hardcoded but okay for now
-
-        if (player is BasicCharacter playerScript)
-        {
-            playerScript.PlayerFiredBullet += BulletManager.Instance.HandleBulletSpawned;
-        }
-        else
-        {
-            GD.PrintErr("Player script not found");
-        }
-
-        if (player == null)
-        {
-            GD.PrintErr("Error: Player scene is not Node2D or a descendant");
-            return;
-        }
-        player.Name = id.ToString();
-        playerNodes.Add(id, player);
-        AddChild(player);
     }
 
     [Rpc(MultiplayerApi.RpcMode.AnyPeer)]
-    private void _createPlayer(int id)
+    private void SyncPlayerIDs(long[] ids)
     {
-       GD.Print($"_createPlayer called, id = {id}, Server = {Multiplayer.IsServer()}");
-       if(!playerIds.Contains(id))
-        {
-            playerIds.Add(id);
-            _addPlayer(id);
-        }
+        playerIds = new List<long>(ids);
     }
 
     [Rpc(MultiplayerApi.RpcMode.AnyPeer)]
@@ -162,9 +93,49 @@ public partial class NetworkingManager : Node
         }
     }
 
-    public long[] GetConnectedPeers()
-    {
-        return Multiplayer.GetPeers().Select(peer => (long)peer).ToArray();
-    }
+//     private void _addPlayer(int id)
+//     {
+//         if (heroScene
+//  == null)
+//         {
+//             GD.PrintErr("Error: Player scene not assigned.");
+//             return;
+//         }
+    
+//         if (playerNodes.ContainsKey(id)) return;
 
+//         GD.Print($"_addPlayer called, id = {id}, Server = {Multiplayer.IsServer()}");
+        
+//         Node2D player = PlayerClass ? bossScene.Instantiate() as Node2D : heroScene.Instantiate() as Node2D;
+//         PlayerClass = !PlayerClass; //very hardcoded but okay for now
+
+//         if (player is BasicCharacter playerScript)
+//         {
+//             playerScript.PlayerFiredBullet += BulletManager.Instance.HandleBulletSpawned;
+//         }
+//         else
+//         {
+//             GD.PrintErr("Player script not found");
+//         }
+
+//         if (player == null)
+//         {
+//             GD.PrintErr("Error: Player scene is not Node2D or a descendant");
+//             return;
+//         }
+//         player.Name = id.ToString();
+//         playerNodes.Add(id, player);
+//         AddChild(player);
+//     }
+
+//     [Rpc(MultiplayerApi.RpcMode.AnyPeer)]
+//     private void _createPlayer(int id)
+//     {
+//        GD.Print($"_createPlayer called, id = {id}, Server = {Multiplayer.IsServer()}");
+//        if(!playerIds.Contains(id))
+//         {
+//             playerIds.Add(id);
+//             _addPlayer(id);
+//         }
+//     }
 }

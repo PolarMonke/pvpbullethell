@@ -11,6 +11,7 @@
 script = ExtResource("1_4241r")
 
 [node name="SpawnManager" type="Node2D" parent="."]
+position = Vector2(475, 261)
 script = ExtResource("2_xllmw")
 heroScene = ExtResource("3_d7k4p")
 bossScene = ExtResource("4_d5a8v")

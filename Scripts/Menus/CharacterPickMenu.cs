@@ -1,6 +1,8 @@
 using Godot;
 using Godot.NativeInterop;
 using System;
+using System.Collections.Generic;
+using System.Linq;
 
 public partial class CharacterPickMenu : Control
 {
@@ -11,6 +13,9 @@ public partial class CharacterPickMenu : Control
 	[Export] private Button _readyButton;
 
 	private bool _characterChosen = false;
+
+    private bool _thisPlayerReady = false;
+    private Godot.Collections.Dictionary<long, bool> _playersStates = new Godot.Collections.Dictionary<long, bool>();
 
 	public override void _Ready()
 	{
@@ -29,16 +34,18 @@ public partial class CharacterPickMenu : Control
 
     public override void _Process(double delta)
     {
+        GD.Print(string.Join( " ", NetworkingManager.Instance.playerIds ));
         UpdatePlayersList();
     }
 
     private void UpdatePlayersList()
     {
-        _playersList.Clear();
-        foreach (int peerId in NetworkingManager.Instance.GetConnectedPeers())
+        _playersList.Clear();  
+        foreach (long peerId in NetworkingManager.Instance.playerIds)
         {
-            _playersList.AddItem($"Player {peerId}");
-        }
+            _playersList.AddItem($"Player {peerId} Ready: {(_playersStates.ContainsKey(peerId) ? _playersStates[peerId] : false)}");
+        } 
+        
     }
 	public void HandleOptionChosen(RadioButton chosenButton)
     {
@@ -67,9 +74,28 @@ public partial class CharacterPickMenu : Control
 	{
 		if (_characterChosen)
 		{
-			GetTree().ChangeSceneToPacked(_nextScene);
+            _thisPlayerReady = true;
+            _playersStates.Add(Multiplayer.GetUniqueId(), _thisPlayerReady);
+            Rpc(nameof(SyncPlayerStates), _playersStates);
+            SyncPlayerStates(_playersStates);
+            bool allReady = NetworkingManager.Instance.playerIds.All(peerId => _playersStates.ContainsKey(peerId) && _playersStates[peerId]);
+            if (allReady)
+            {
+                GetTree().ChangeSceneToPacked(_nextScene);
+            }
 		}
 	}
+
+    [Rpc(MultiplayerApi.RpcMode.AnyPeer)]
+    private void SyncPlayerStates(Godot.Collections.Dictionary<long, bool> syncedPlayerStates)
+    {
+        _playersStates = syncedPlayerStates;
+        GD.Print("States synced");
+        foreach (var state in _playersStates)
+        {
+            GD.Print($"Player {state.Key}: Ready - {state.Value}");
+        }
+    }
 
 	
 }

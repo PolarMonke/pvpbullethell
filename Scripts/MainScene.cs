@@ -8,12 +8,13 @@ public partial class MainScene : Node2D
 		long id = Multiplayer.GetUniqueId();
 		if (id == 1)
 		{
-			SpawnManager.Instance.RpcId(1, nameof(SpawnManager.SpawnPlayer), id);
+			SpawnManager.Instance.SpawnForHost();
+			GD.Print("Host spawned");
 		}
 		else
 		{
-			SpawnManager.Instance.SpawnExistingPlayersForNewcomer(id);
-			SpawnManager.Instance.RpcId(id, nameof(SpawnManager.SpawnPlayer), id);
+			SpawnManager.Instance.SpawnForConnected(id);
+			GD.Print("Player spawned");
 		}
 	}
 }
