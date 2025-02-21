@@ -58,6 +58,7 @@ public partial class BasicCharacter : CharacterBody2D
             Walk();
             UpdateFacingDirection();
             UpdateAnimation();
+            HandleShooting();
         }
     }
     protected virtual void Walk()
@@ -132,15 +133,12 @@ public partial class BasicCharacter : CharacterBody2D
     {
         QueueFree();
     }
-    public override void _UnhandledInput(InputEvent @event)
+    protected virtual void HandleShooting()
     {
-        if (@event.IsActionPressed("shoot") && bulletCooldownNode.IsStopped())
+        if (Input.IsActionPressed("shoot") && bulletCooldownNode.IsStopped() && IsMultiplayerAuthority())
         {
             bulletCooldownNode.Start(bulletCooldown);
-            if (IsMultiplayerAuthority())
-            {
-                    Shoot();
-            }
+            Shoot();
         }
     }
 

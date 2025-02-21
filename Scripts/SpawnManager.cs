@@ -22,8 +22,7 @@ public partial class SpawnManager : Node2D
         {
             Instance = this;
         }
-        
-        // Спаўн персанажаў на аснове захаваных даных
+
         if (Multiplayer.IsServer())
         {
             foreach (var playerId in NetworkingManager.Instance.playerIds)

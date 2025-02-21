@@ -73,14 +73,14 @@ public partial class HeroCharacter : BasicCharacter
 
     public override void _UnhandledInput(InputEvent @event)
     {
-        if (@event.IsActionPressed("shoot") && bulletCooldownNode.IsStopped())
-        {
-            bulletCooldownNode.Start(bulletCooldown);
-            if (IsMultiplayerAuthority())
-            {
-                    Shoot();
-            }
-        }
+        // if (@event.IsActionPressed("shoot") && bulletCooldownNode.IsStopped())
+        // {
+        //     bulletCooldownNode.Start(bulletCooldown);
+        //     if (IsMultiplayerAuthority())
+        //     {
+        //             Shoot();
+        //     }
+        // }
         if (@event.IsActionPressed("run") && _canRun)
         {
             Run();
