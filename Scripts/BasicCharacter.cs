@@ -42,6 +42,12 @@ public partial class BasicCharacter : CharacterBody2D
             UpdateHealthDisplay();
 
             animatedSprite.AnimationFinished += OnAnimationFinished;
+
+            GD.Print($"Player {Name} entered tree with authority: {IsMultiplayerAuthority()}");
+        }
+        else
+        {
+            GD.PrintErr("Player name is null!");
         }
     }
 

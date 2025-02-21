@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using Godot;
+using Godot.Collections;
 
 public partial class NetworkingManager : Node
 {
@@ -12,9 +13,10 @@ public partial class NetworkingManager : Node
 
     public bool PlayerClass = false; //false - hero, true - boss for now
     private ENetMultiplayerPeer _peer = new ENetMultiplayerPeer();
-
-    public Dictionary<long, Node2D> playerNodes = new Dictionary<long, Node2D>();
     public List<long> playerIds = new List<long>();
+    public Godot.Collections.Dictionary<long, bool> PlayerClasses = new Godot.Collections.Dictionary<long, bool>();
+    [Signal]
+    public delegate void PlayerClassesUpdatedEventHandler(Godot.Collections.Dictionary<long, bool> classes);
 
     public override void _Ready()
     {
@@ -30,6 +32,7 @@ public partial class NetworkingManager : Node
         Multiplayer.PeerConnected += OnPeerConnected;
         Multiplayer.PeerDisconnected += OnPeerDisconnected;
     }
+    
 
     public void CreateServer()
     {
@@ -48,22 +51,22 @@ public partial class NetworkingManager : Node
         GD.Print("Client connecting to " + address);
     }
     private void OnPeerConnected(long id)
-{
-    GD.Print($"Peer connected: {id}");
-    if (Multiplayer.IsServer())
     {
-        _addPlayerID((int)id);
-        RpcId(id, nameof(SyncPlayerIDs), playerIds.ToArray());
+        GD.Print($"Peer connected: {id}");
+        if (Multiplayer.IsServer())
+        {
+            _addPlayerID(id);
+            RpcId(id, nameof(SyncPlayerIDs), playerIds.ToArray());
+        }
     }
-}
 
     private void OnPeerDisconnected(long id)
     {
         GD.Print($"Peer disconnected: {id}");
-        if (playerNodes.ContainsKey((int)id))
+        if (SpawnManager.Instance.playerNodes.ContainsKey((int)id))
         {
-            playerNodes[(int)id].QueueFree();
-            playerNodes.Remove((int)id);
+            SpawnManager.Instance.playerNodes[(int)id].QueueFree();
+            SpawnManager.Instance.playerNodes.Remove((int)id);
             playerIds.Remove((int)id);
         }
     }
@@ -73,7 +76,9 @@ public partial class NetworkingManager : Node
         if (!playerIds.Contains(id))
         {
             playerIds.Add(id);
+            PlayerClasses.Add(id, false);
             Rpc(nameof(SyncPlayerIDs), playerIds.ToArray());
+            Rpc(nameof(SyncPlayerClasses), PlayerClasses);
         }
     }
 
@@ -84,58 +89,9 @@ public partial class NetworkingManager : Node
     }
 
     [Rpc(MultiplayerApi.RpcMode.AnyPeer)]
-    public void _SyncPlayerPosition(int playerId, Vector2 position)
+    public void SyncPlayerClasses(Godot.Collections.Dictionary<long, bool> classes)
     {
-        if (playerNodes.ContainsKey(playerId))
-        {
-            playerNodes[playerId].Position = position;
-            GD.Print($"Syncing player pos {playerId}, pos = {position}");
-        }
+        PlayerClasses = classes;
+        EmitSignal(nameof(PlayerClassesUpdated), PlayerClasses); 
     }
-
-//     private void _addPlayer(int id)
-//     {
-//         if (heroScene
-//  == null)
-//         {
-//             GD.PrintErr("Error: Player scene not assigned.");
-//             return;
-//         }
-    
-//         if (playerNodes.ContainsKey(id)) return;
-
-//         GD.Print($"_addPlayer called, id = {id}, Server = {Multiplayer.IsServer()}");
-        
-//         Node2D player = PlayerClass ? bossScene.Instantiate() as Node2D : heroScene.Instantiate() as Node2D;
-//         PlayerClass = !PlayerClass; //very hardcoded but okay for now
-
-//         if (player is BasicCharacter playerScript)
-//         {
-//             playerScript.PlayerFiredBullet += BulletManager.Instance.HandleBulletSpawned;
-//         }
-//         else
-//         {
-//             GD.PrintErr("Player script not found");
-//         }
-
-//         if (player == null)
-//         {
-//             GD.PrintErr("Error: Player scene is not Node2D or a descendant");
-//             return;
-//         }
-//         player.Name = id.ToString();
-//         playerNodes.Add(id, player);
-//         AddChild(player);
-//     }
-
-//     [Rpc(MultiplayerApi.RpcMode.AnyPeer)]
-//     private void _createPlayer(int id)
-//     {
-//        GD.Print($"_createPlayer called, id = {id}, Server = {Multiplayer.IsServer()}");
-//        if(!playerIds.Contains(id))
-//         {
-//             playerIds.Add(id);
-//             _addPlayer(id);
-//         }
-//     }
 }

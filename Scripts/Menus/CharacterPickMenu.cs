@@ -58,16 +58,32 @@ public partial class CharacterPickMenu : Control
         if (chosenButton.Name == "Boss")
         {
 			NetworkingManager.Instance.PlayerClass = true; //false - hero, true - boss for now
+            NetworkingManager.Instance.PlayerClasses[Multiplayer.GetUniqueId()] = true;
+            foreach (var player in NetworkingManager.Instance.PlayerClasses)
+            {
+                if (player.Key != Multiplayer.GetUniqueId())
+                {
+                    NetworkingManager.Instance.PlayerClasses[player.Key] = false;
+                }
+            }
             GD.Print("Boss chosen");
 			_characterChosen = true;
         }
         if (chosenButton.Name == "Hero")
         {
 			NetworkingManager.Instance.PlayerClass = false;
+            NetworkingManager.Instance.PlayerClasses[Multiplayer.GetUniqueId()] = false;
+            foreach (var player in NetworkingManager.Instance.PlayerClasses)
+            {
+                if (player.Key != Multiplayer.GetUniqueId())
+                {
+                    NetworkingManager.Instance.PlayerClasses[player.Key] = true;
+                }
+            }
             GD.Print("Hero chosen");
 			_characterChosen = true;
         }
-		
+        NetworkingManager.Instance.Rpc(nameof(NetworkingManager.Instance.SyncPlayerClasses), NetworkingManager.Instance.PlayerClasses);
     }
 
 	public void OnReadyButtonPressed()
