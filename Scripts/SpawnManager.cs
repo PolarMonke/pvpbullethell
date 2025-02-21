@@ -34,17 +34,6 @@ public partial class SpawnManager : Node2D
         }
     }
 
-    public override void _Process(double delta)
-    {
-        if (Multiplayer.IsServer())
-        {
-            foreach (var player in playerNodes)
-            {
-                Rpc(nameof(SyncPlayerPosition), player.Key, player.Value.Position);
-            }
-        }
-    }
-
     [Rpc(MultiplayerApi.RpcMode.Authority, CallLocal = true)]
     private void SpawnPlayer(long id, bool isBoss)
     {
@@ -124,15 +113,6 @@ public partial class SpawnManager : Node2D
         if (playerNodes.ContainsKey(playerId))
         {
             GD.Print($"SetPlayerPosition called for player {Name}, position = {position}");
-            playerNodes[playerId].Position = position;
-        }
-    }
-
-    [Rpc(MultiplayerApi.RpcMode.AnyPeer)]
-    private void SyncPlayerPosition(long playerId, Vector2 position)
-    {
-        if (playerNodes.ContainsKey(playerId))
-        {
             playerNodes[playerId].Position = position;
         }
     }
