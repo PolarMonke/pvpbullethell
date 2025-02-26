@@ -134,18 +134,20 @@ public partial class BasicCharacter : CharacterBody2D
         }
     }
 
-    [Rpc(MultiplayerApi.RpcMode.AnyPeer, CallLocal = true)]
+    [Rpc(MultiplayerApi.RpcMode.Authority, CallLocal = true)]
     protected void DeathEffects()
     {
         SetAnimationState(AnimationState.Die);
         _isDead = true;
+        Rpc(nameof(EndGame));
     }
 
-    [Rpc(MultiplayerApi.RpcMode.AnyPeer, CallLocal = true)]
+    [Rpc(MultiplayerApi.RpcMode.Authority)]
     protected void EndGame()
     {
         GameManager.Instance.Rpc(nameof(GameManager.EndGame));
     }
+
     protected virtual void HandleShooting()
     {
         if (Input.IsActionPressed("shoot") && bulletCooldownNode.IsStopped() && IsMultiplayerAuthority())

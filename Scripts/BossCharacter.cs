@@ -76,7 +76,6 @@ public partial class BossCharacter : BasicCharacter
 
     private void ShootCircle()
     {
-		GD.Print("Shooting Circle");
         int bulletCount = 16;
         float angleIncrement = 360f / bulletCount;
 
@@ -93,7 +92,6 @@ public partial class BossCharacter : BasicCharacter
 
 	private void ShootCross()
 	{
-		GD.Print("Shooting Cross");
 		RunCoroutine(CrossPattern());
 	}
 	private IEnumerator CrossPattern()
@@ -116,7 +114,6 @@ public partial class BossCharacter : BasicCharacter
 
 	private void ShootSpiral()
 	{
-		GD.Print("Shooting Spiral");
 		RunCoroutine(SpiralPattern());
 	}
 	private IEnumerator SpiralPattern()
@@ -135,7 +132,6 @@ public partial class BossCharacter : BasicCharacter
 	{
 		SetAnimationState(AnimationState.Attack);
         Rpc(nameof(SyncAnimationState), (int)AnimationState.Attack);
-		GD.Print("Shooting Sun");
 		RunCoroutine(SunPattern());
 	}
 	private IEnumerator SunPattern() 
@@ -159,7 +155,6 @@ public partial class BossCharacter : BasicCharacter
 	{
 		SetAnimationState(AnimationState.Attack);
         Rpc(nameof(SyncAnimationState), (int)AnimationState.Attack);
-		GD.Print("Shooting Sine Wave");
 		RunCoroutine(SineWavePattern());
 	}
 
