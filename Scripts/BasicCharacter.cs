@@ -129,8 +129,11 @@ public partial class BasicCharacter : CharacterBody2D
         if (!_isDead)
         {
             SetAnimationState(AnimationState.Die);
-            Rpc(nameof(DeathEffects));
             _isDead = true;
+            NetworkingManager.Instance.PlayerStatuses[GetMultiplayerAuthority()] = true;
+            GD.Print(NetworkingManager.Instance.PlayerStatuses[GetMultiplayerAuthority()]);
+            NetworkingManager.Instance.SyncPlayerStatuses(NetworkingManager.Instance.PlayerStatuses);
+            Rpc(nameof(DeathEffects));
         }
     }
 
@@ -142,7 +145,7 @@ public partial class BasicCharacter : CharacterBody2D
         Rpc(nameof(EndGame));
     }
 
-    [Rpc(MultiplayerApi.RpcMode.Authority)]
+    [Rpc(MultiplayerApi.RpcMode.AnyPeer, CallLocal = true)]
     protected void EndGame()
     {
         GameManager.Instance.Rpc(nameof(GameManager.EndGame));

@@ -20,16 +20,25 @@ public partial class GameManager : Node
     public void EndGame()
     {
         Rpc(nameof(ShowEndGameScreen));
-        GD.Print("Game ended");
     }
 
     [Rpc(MultiplayerApi.RpcMode.AnyPeer, CallLocal = true)]
     private void ShowEndGameScreen()
     {
         var endGameInstance = _gameOverScreen.Instantiate();
+        bool lost = NetworkingManager.Instance.PlayerStatuses[GetMultiplayerAuthority()];
+        if (endGameInstance.GetNode("Panel").GetNode("Label") is Label label)
+        {
+            if (lost)
+            {
+                label.Text = "You lost!";
+            }
+            else
+            {
+                label.Text = "You won!";
+            }
+        }
         GetTree().Root.AddChild(endGameInstance);
         GetTree().Paused = true;
-        GD.Print("Game over spawned");
-        
     }
 }

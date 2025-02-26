@@ -1,4 +1,6 @@
-[gd_scene format=3 uid="uid://drlc38yydpn5f"]
+[gd_scene load_steps=2 format=3 uid="uid://drlc38yydpn5f"]
+
+[ext_resource type="Script" path="res://Scripts/Menus/EndGameMenu.cs" id="1_fcje7"]
 
 [node name="EndGameMenu" type="Control"]
 layout_mode = 3
@@ -7,6 +9,7 @@ anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
+script = ExtResource("1_fcje7")
 
 [node name="Panel" type="Panel" parent="."]
 custom_minimum_size = Vector2(500, 200)
@@ -73,3 +76,6 @@ offset_bottom = 19.0
 grow_horizontal = 2
 grow_vertical = 2
 text = "To main menu"
+
+[connection signal="pressed" from="Panel/CharacterMenuButton" to="." method="OnCharacterMenuButtonPressed"]
+[connection signal="pressed" from="Panel/MainMenuButton" to="." method="OnMainMenuButtonPressed"]

@@ -28,7 +28,7 @@ public partial class BulletManager : Node2D
         }
     }
 
-    [Rpc(MultiplayerApi.RpcMode.AnyPeer, CallLocal = true, TransferMode = MultiplayerPeer.TransferModeEnum.Reliable)]
+    [Rpc(MultiplayerApi.RpcMode.AnyPeer, CallLocal = false)]
     private void SpawnBulletOnClients(string bulletType, Vector2 position, Vector2 direction, long holderId)
     {
         if (_bulletScenes.TryGetValue(bulletType, out var bulletScene))
