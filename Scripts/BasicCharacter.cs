@@ -10,6 +10,7 @@ public partial class BasicCharacter : CharacterBody2D
     [Export] public int MaxHealth = 100;
     [Export] public int Health = 100;
     protected bool _canBeHurt = true;
+    protected bool _isDead = false;
 
     [Export] protected ProgressBar healthBar;
 
@@ -53,7 +54,7 @@ public partial class BasicCharacter : CharacterBody2D
 
     public override void _PhysicsProcess(double delta)
     {
-        if (IsMultiplayerAuthority())
+        if (IsMultiplayerAuthority() && !_isDead)
         {
             Walk();
             UpdateFacingDirection();
@@ -64,7 +65,7 @@ public partial class BasicCharacter : CharacterBody2D
     protected virtual void Walk()
     {
         bool isMoving = Velocity.Length() > 0;
-        if (currentAnimationState != AnimationState.Attack && currentAnimationState != AnimationState.Hurt)
+        if (currentAnimationState != AnimationState.Attack && currentAnimationState != AnimationState.Hurt && currentAnimationState != AnimationState.Die)
         {
             SetAnimationState(isMoving ? AnimationState.Walk : AnimationState.Idle);
         }
@@ -92,7 +93,7 @@ public partial class BasicCharacter : CharacterBody2D
     [Rpc(MultiplayerApi.RpcMode.AnyPeer)]
     public void TakeDamage(int damage)
     {
-        if (_canBeHurt)
+        if (_canBeHurt && !_isDead)
         {
             SetAnimationState(AnimationState.Hurt);
 
@@ -125,18 +126,22 @@ public partial class BasicCharacter : CharacterBody2D
 
     protected void Die()
     {
-        SetAnimationState(AnimationState.Die);
-        Rpc(nameof(DeathEffects));
+        if (!_isDead)
+        {
+            SetAnimationState(AnimationState.Die);
+            Rpc(nameof(DeathEffects));
+            _isDead = true;
+        }
     }
 
-    [Rpc(MultiplayerApi.RpcMode.Authority)]
+    [Rpc(MultiplayerApi.RpcMode.AnyPeer, CallLocal = true)]
     protected void DeathEffects()
     {
         SetAnimationState(AnimationState.Die);
-        QueueFree();
+        _isDead = true;
     }
 
-    [Rpc(MultiplayerApi.RpcMode.Authority)]
+    [Rpc(MultiplayerApi.RpcMode.AnyPeer, CallLocal = true)]
     protected void EndGame()
     {
         GameManager.Instance.Rpc(nameof(GameManager.EndGame));
@@ -153,6 +158,7 @@ public partial class BasicCharacter : CharacterBody2D
     [Rpc(MultiplayerApi.RpcMode.Authority)]
     protected virtual void Shoot()
     {
+        SetAnimationState(AnimationState.Attack);
         var direction = (GetGlobalMousePosition() - GlobalPosition).Normalized();
         if (GetMultiplayerAuthority() == 1)
 		{
@@ -192,7 +198,7 @@ public partial class BasicCharacter : CharacterBody2D
             AnimationState.Attack => "Attack",
             AnimationState.Run => "Run",
             AnimationState.Hurt => "Hurt",
-            AnimationState.Die => "Die",
+            AnimationState.Die => "Dead",
             _ => "Idle"
         };
         if (animatedSprite.Animation != targetAnimation || !animatedSprite.IsPlaying())

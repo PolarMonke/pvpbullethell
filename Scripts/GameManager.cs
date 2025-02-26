@@ -16,7 +16,7 @@ public partial class GameManager : Node
         }
     }
 
-    [Rpc(MultiplayerApi.RpcMode.Authority)]
+    [Rpc(MultiplayerApi.RpcMode.AnyPeer)]
     public void EndGame()
     {
         Rpc(nameof(ShowEndGameScreen));
