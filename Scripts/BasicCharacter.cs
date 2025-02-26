@@ -125,13 +125,21 @@ public partial class BasicCharacter : CharacterBody2D
 
     protected void Die()
     {
+        SetAnimationState(AnimationState.Die);
         Rpc(nameof(DeathEffects));
     }
 
     [Rpc(MultiplayerApi.RpcMode.Authority)]
     protected void DeathEffects()
     {
+        SetAnimationState(AnimationState.Die);
         QueueFree();
+    }
+
+    [Rpc(MultiplayerApi.RpcMode.Authority)]
+    protected void EndGame()
+    {
+        GameManager.Instance.Rpc(nameof(GameManager.EndGame));
     }
     protected virtual void HandleShooting()
     {
@@ -145,18 +153,18 @@ public partial class BasicCharacter : CharacterBody2D
     [Rpc(MultiplayerApi.RpcMode.Authority)]
     protected virtual void Shoot()
     {
-        if (Multiplayer.IsServer())
-        {
-            var direction = (GetGlobalMousePosition() - GlobalPosition).Normalized();
-            BulletManager.Instance.HandleBulletSpawned("Default", bulletSpawn.GlobalPosition, direction, Multiplayer.GetUniqueId());
-        }
-        else
-        {
-            RpcId(1, nameof(RequestShoot), "Default", bulletSpawn.GlobalPosition, (GetGlobalMousePosition() - GlobalPosition).Normalized(), Multiplayer.GetUniqueId());
-        }
+        var direction = (GetGlobalMousePosition() - GlobalPosition).Normalized();
+        if (GetMultiplayerAuthority() == 1)
+		{
+			RequestShoot("Default", bulletSpawn.GlobalPosition, direction, GetMultiplayerAuthority());
+		}
+		else
+		{
+			RpcId(1, nameof(RequestShoot), "Default", bulletSpawn.GlobalPosition, direction, GetMultiplayerAuthority());
+		}
     }
 
-    [Rpc(MultiplayerApi.RpcMode.AnyPeer, CallLocal = false)]
+    [Rpc(MultiplayerApi.RpcMode.AnyPeer, CallLocal = true)]
     protected void RequestShoot(string type, Vector2 position, Vector2 direction, long id)
     {
         if (Multiplayer.IsServer())

@@ -7,7 +7,7 @@ using System.Collections;
 
 public partial class BossCharacter : BasicCharacter
 {
-	[Export] public float PatternCooldown = 3.0f;
+	[Export] public float PatternCooldown = 1.0f;
     private Timer _patternTimer;
     private List<Action> _shootingPatterns = new List<Action>();
     private int _currentPatternIndex = 0;
@@ -61,15 +61,15 @@ public partial class BossCharacter : BasicCharacter
 
 		GetTree().Root.AddChild(bulletInstance);
 
-		// if (Multiplayer.GetUniqueId() == 1)
-		// {
-		// 	RequestShoot("Default", bulletInstance.GlobalPosition, direction, bulletScript.HolderID);
-		// }
-		// else
-		// {
-		// 	RpcId(1, nameof(RequestShoot), "Default", bulletInstance.GlobalPosition, direction, bulletScript.HolderID);
-		// }
-		RequestShoot("Default", bulletInstance.GlobalPosition, direction, bulletScript.HolderID);
+		if (GetMultiplayerAuthority() == 1)
+		{
+			RequestShoot("Default", bulletInstance.GlobalPosition, direction, bulletScript.HolderID);
+		}
+		else
+		{
+			RpcId(1, nameof(RequestShoot), "Default", bulletInstance.GlobalPosition, direction, bulletScript.HolderID);
+		}
+		//RequestShoot("Default", bulletInstance.GlobalPosition, direction, bulletScript.HolderID);
 	}
 
 	#region Shooting Patterns

@@ -6,9 +6,9 @@ using System.Runtime;
 public partial class Bullet : Area2D
 {
     [Export] public int Damage = 10;
-    [Export] public int Speed = 500; // Хуткасць у пікселях за секунду
+    [Export] public int Speed = 500;
     [Export] public float LifeTime = 1.0f;
-    [Export] public Texture2D BulletTexture; // Тэкстура кулі
+    [Export] public Texture2D BulletTexture;
 
     protected Timer _lifeTimer;
     protected Vector2 direction = Vector2.Zero;
@@ -24,7 +24,6 @@ public partial class Bullet : Area2D
         _lifeTimer.Start();
         _lifeTimer.Timeout += DestroyBulletAfterTime;
 
-        // Усталёўваем тэкстуру
         if (BulletTexture != null)
         {
             var sprite = GetNode<Sprite2D>("Sprite2D");
@@ -36,12 +35,9 @@ public partial class Bullet : Area2D
     {
         if (direction != Vector2.Zero)
         {
-            // Рухаем кулю з улікам часу (delta)
             var velocity = direction * Speed * (float)delta;
             GlobalPosition += velocity;
         }
-
-        // Сінхранізацыя пазіцыі на серверы
         if (Multiplayer.IsServer())
         {
             Rpc(nameof(SetBulletPosition), GlobalPosition);
@@ -56,7 +52,7 @@ public partial class Bullet : Area2D
     protected virtual void OnBodyEntered(Node body)
     {
         if (_damageApplied) return;
-        GD.Print(HolderID.ToString() + " - " + body.Name); 
+        //GD.Print(HolderID.ToString() + " - " + body.Name); 
         if (body.Name != HolderID.ToString())
         {
             if (body is BasicCharacter player)
