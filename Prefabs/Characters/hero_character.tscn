@@ -3,7 +3,7 @@
 [ext_resource type="Script" path="res://Scripts/HeroCharacter.cs" id="1_x03yp"]
 [ext_resource type="Texture2D" uid="uid://cgjhrx5wi3je1" path="res://Sprites/hero/Countess_Vampire/Attack_1.png" id="2_e1dd1"]
 [ext_resource type="Texture2D" uid="uid://tsqwic8ki7jv" path="res://Sprites/hero/Countess_Vampire/Walk.png" id="2_mjj5v"]
-[ext_resource type="PackedScene" uid="uid://dh2uvcnuxnr2v" path="res://Prefabs/bullet.tscn" id="2_n0dm5"]
+[ext_resource type="PackedScene" uid="uid://dh2uvcnuxnr2v" path="res://Prefabs/Bullets/bullet.tscn" id="2_n0dm5"]
 [ext_resource type="Texture2D" uid="uid://c1lwqvfjmmod7" path="res://Sprites/hero/Countess_Vampire/Idle.png" id="2_wxstl"]
 [ext_resource type="Texture2D" uid="uid://b6tpbou5qycrs" path="res://Sprites/hero/Countess_Vampire/Dead.png" id="3_ltlbt"]
 [ext_resource type="Texture2D" uid="uid://bsov50epkkmu4" path="res://Sprites/hero/Countess_Vampire/Run.png" id="4_3sxru"]

@@ -1,7 +1,7 @@
 [gd_scene load_steps=6 format=3 uid="uid://dcwuslljujpl4"]
 
 [ext_resource type="Script" path="res://Scripts/BasicCharacter.cs" id="1_2loaq"]
-[ext_resource type="PackedScene" uid="uid://dh2uvcnuxnr2v" path="res://Prefabs/bullet.tscn" id="2_3823h"]
+[ext_resource type="PackedScene" uid="uid://dh2uvcnuxnr2v" path="res://Prefabs/Bullets/bullet.tscn" id="2_3823h"]
 [ext_resource type="Texture2D" uid="uid://du5mbljcvpvlm" path="res://Sprites/icon.svg" id="2_namfe"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_nhc3g"]

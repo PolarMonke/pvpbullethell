@@ -1,0 +1,17 @@
+[gd_scene load_steps=4 format=3 uid="uid://caw0poo284038"]
+
+[ext_resource type="Script" path="res://Scripts/Bullets/ExplosiveBullet.cs" id="1_mafxf"]
+[ext_resource type="Texture2D" uid="uid://i12dpb2rly7d" path="res://Sprites/RedBullet.png" id="2_xn1qc"]
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_yti8w"]
+radius = 8.0
+
+[node name="ExplosiveBullet" type="Area2D"]
+script = ExtResource("1_mafxf")
+LifeTime = 5.0
+BulletTexture = ExtResource("2_xn1qc")
+
+[node name="Sprite2D" type="Sprite2D" parent="."]
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+shape = SubResource("CircleShape2D_yti8w")

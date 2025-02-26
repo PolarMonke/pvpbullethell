@@ -15,20 +15,9 @@ public partial class BossCharacter : BasicCharacter
 
 	public override void _EnterTree()
     {
+		base._EnterTree();
         if (Name != null)
         {
-            ///////////////////////////
-            animatedSprite.Animation = "Idle";
-            animatedSprite.Play();
-            SetMultiplayerAuthority(Int32.Parse(Name));
-
-            healthBar.MaxValue = MaxHealth;
-            Health = MaxHealth;
-            UpdateHealthDisplay();
-
-            animatedSprite.AnimationFinished += OnAnimationFinished;
-            ///////////////////////////I could just use base
-
 			_patternTimer = new Timer();
 			_patternTimer.WaitTime = PatternCooldown;
 			_patternTimer.OneShot = false;
@@ -42,6 +31,14 @@ public partial class BossCharacter : BasicCharacter
 			_shootingPatterns.Add(ShootSineWave);
 			_shootingPatterns.Add(ShootSun);
         }
+    }
+	protected override void HandleShooting()
+    {
+        // if (Input.IsActionPressed("shoot") && bulletCooldownNode.IsStopped() && IsMultiplayerAuthority())
+        // {
+        //     bulletCooldownNode.Start(bulletCooldown);
+        //     Shoot();
+        // }
     }
 	private void OnPatternTimerTimeout()
     {
@@ -58,23 +55,22 @@ public partial class BossCharacter : BasicCharacter
 		var bulletScript = bulletInstance as Bullet;
 		if (bulletScript != null)
 		{
-			bulletScript.HolderID = Multiplayer.GetUniqueId();
+			bulletScript.HolderID = GetMultiplayerAuthority();
 			bulletScript.SetDirection(direction);
 		}
 
-		BulletManager.Instance.HandleBulletSpawned(bulletInstance, bulletInstance.GlobalPosition, direction, Multiplayer.GetUniqueId());
+		GetTree().Root.AddChild(bulletInstance);
+
+		// if (Multiplayer.GetUniqueId() == 1)
+		// {
+		// 	RequestShoot("Default", bulletInstance.GlobalPosition, direction, bulletScript.HolderID);
+		// }
+		// else
+		// {
+		// 	RpcId(1, nameof(RequestShoot), "Default", bulletInstance.GlobalPosition, direction, bulletScript.HolderID);
+		// }
+		RequestShoot("Default", bulletInstance.GlobalPosition, direction, bulletScript.HolderID);
 	}
-    private BasicCharacter FindPlayer()
-    {
-        foreach (var node in GetTree().GetNodesInGroup("player"))
-        {
-            if (node is BasicCharacter player)
-            {
-                return player;
-            }
-        }
-        return null;
-    }
 
 	#region Shooting Patterns
 
@@ -137,6 +133,8 @@ public partial class BossCharacter : BasicCharacter
 
 	private void ShootSun()
 	{
+		SetAnimationState(AnimationState.Attack);
+        Rpc(nameof(SyncAnimationState), (int)AnimationState.Attack);
 		GD.Print("Shooting Sun");
 		RunCoroutine(SunPattern());
 	}
@@ -159,6 +157,8 @@ public partial class BossCharacter : BasicCharacter
 
 	private void ShootSineWave()
 	{
+		SetAnimationState(AnimationState.Attack);
+        Rpc(nameof(SyncAnimationState), (int)AnimationState.Attack);
 		GD.Print("Shooting Sine Wave");
 		RunCoroutine(SineWavePattern());
 	}

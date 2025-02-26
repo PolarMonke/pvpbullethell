@@ -1,12 +1,11 @@
 using Godot;
+using Godot.Collections;
 
 public partial class BulletManager : Node2D
 {
     public static BulletManager Instance;
-    [Export] private PackedScene bulletScene;
+    private Dictionary<string, PackedScene> _bulletScenes = new Dictionary<string, PackedScene>();
 
-    [Signal]
-    public delegate void PlayerFiredBulletEventHandler(Area2D bullet, Vector2 position, Vector2 direction);
     public override void _Ready()
     {
         if (Instance != null)
@@ -17,29 +16,34 @@ public partial class BulletManager : Node2D
         {
             Instance = this;
         }
+        _bulletScenes.Add("Default", GD.Load<PackedScene>("res://Prefabs/Bullets/bullet.tscn"));
+        _bulletScenes.Add("Explosive", GD.Load<PackedScene>("res://Prefabs/Bullets/explosive_bullet.tscn"));
     }
-    public void HandleBulletSpawned(Area2D bullet, Vector2 position, Vector2 direction, long holderId)
+
+    public void HandleBulletSpawned(string bulletType, Vector2 position, Vector2 direction, long holderId)
     {
         if (Multiplayer.IsServer())
         {
-            Rpc(nameof(SpawnBulletOnClients), position, direction, holderId);
+            Rpc(nameof(SpawnBulletOnClients), bulletType, position, direction, holderId);
         }
     }
 
-    [Rpc(MultiplayerApi.RpcMode.AnyPeer, CallLocal = true)]
-    private void SpawnBulletOnClients(Vector2 position, Vector2 direction, long holderId)
+    [Rpc(MultiplayerApi.RpcMode.AnyPeer)]
+    private void SpawnBulletOnClients(string bulletType, Vector2 position, Vector2 direction, long holderId)
     {
-        var bulletInstance = bulletScene.Instantiate<Area2D>();
-        GetTree().Root.AddChild(bulletInstance);
-
-        bulletInstance.GlobalPosition = position;
-
-        var bulletScript = bulletInstance.GetNode<Bullet>(".");
-        if (bulletScript != null)
+        if (_bulletScenes.TryGetValue(bulletType, out var bulletScene))
         {
-            bulletScript.HolderID = holderId;
-            bulletScript.SetDirection(direction);
+            var bulletInstance = bulletScene.Instantiate<Area2D>();
+            GetTree().Root.AddChild(bulletInstance); 
+
+            bulletInstance.GlobalPosition = position;
+
+            var bulletScript = bulletInstance.GetNode<Bullet>(".");
+            if (bulletScript != null)
+            {
+                bulletScript.HolderID = holderId;
+                bulletScript.SetDirection(direction);
+            }
         }
     }
 }
-

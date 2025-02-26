@@ -20,8 +20,8 @@ public partial class BasicCharacter : CharacterBody2D
 
     [Export] public AnimatedSprite2D animatedSprite;
 
-    [Signal]
-    public delegate void PlayerFiredBulletEventHandler(Area2D bullet, Vector2 postition, Vector2 direction, long holderId);
+    [Signal] 
+    public delegate void PlayerFiredBulletEventHandler(string bullet, Vector2 postition, Vector2 direction, long holderId);
     protected Vector2 _previousPosition;
 
     protected bool _facingRight = true;
@@ -145,25 +145,24 @@ public partial class BasicCharacter : CharacterBody2D
     [Rpc(MultiplayerApi.RpcMode.Authority)]
     protected virtual void Shoot()
     {
-        GD.Print($"Server shooting bullet for player {Name}");
-        if (bulletScene == null || bulletSpawn == null)
+        if (Multiplayer.IsServer())
         {
-            GD.PrintErr("Assign bullet and bulletSpawn in editor");
-            return;
+            var direction = (GetGlobalMousePosition() - GlobalPosition).Normalized();
+            BulletManager.Instance.HandleBulletSpawned("Default", bulletSpawn.GlobalPosition, direction, Multiplayer.GetUniqueId());
         }
-        SetAnimationState(AnimationState.Attack);
-        Area2D bulletInstance = bulletScene.Instantiate<Area2D>();
-        Vector2 directionToMouse = bulletSpawn.GlobalPosition.DirectionTo(GetGlobalMousePosition()).Normalized();
-        bulletInstance.GlobalPosition = bulletSpawn.GlobalPosition;
+        else
+        {
+            RpcId(1, nameof(RequestShoot), "Default", bulletSpawn.GlobalPosition, (GetGlobalMousePosition() - GlobalPosition).Normalized(), Multiplayer.GetUniqueId());
+        }
+    }
 
-        var bulletScript = bulletInstance as Bullet;
-        if(bulletScript != null)
+    [Rpc(MultiplayerApi.RpcMode.AnyPeer, CallLocal = false)]
+    protected void RequestShoot(string type, Vector2 position, Vector2 direction, long id)
+    {
+        if (Multiplayer.IsServer())
         {
-            bulletScript.HolderID = Multiplayer.GetUniqueId();
-            bulletScript.SetDirection(directionToMouse);
+            BulletManager.Instance.HandleBulletSpawned(type, position, direction, id);
         }
-        GetTree().Root.AddChild(bulletInstance);
-        BulletManager.Instance.HandleBulletSpawned(bulletInstance, bulletInstance.GlobalPosition, directionToMouse, Multiplayer.GetUniqueId());
     }
 
     protected void SetAnimationState(AnimationState newState)

@@ -11,21 +11,9 @@ public partial class HeroCharacter : BasicCharacter
 
     public override void _EnterTree()
     {
+        base._EnterTree();
         if (Name != null)
         {
-            ///////////////////////////
-            animatedSprite.Animation = "Idle";
-            animatedSprite.Play();
-            SetMultiplayerAuthority(Int32.Parse(Name));
-
-            healthBar.MaxValue = MaxHealth;
-            Health = MaxHealth;
-            UpdateHealthDisplay();
-
-            animatedSprite.AnimationFinished += OnAnimationFinished;
-            ///////////////////////////
-
-
             _runTimer = new Timer();
             _runTimer.WaitTime = _runTime;
             _runTimer.OneShot = true;
@@ -73,14 +61,6 @@ public partial class HeroCharacter : BasicCharacter
 
     public override void _UnhandledInput(InputEvent @event)
     {
-        // if (@event.IsActionPressed("shoot") && bulletCooldownNode.IsStopped())
-        // {
-        //     bulletCooldownNode.Start(bulletCooldown);
-        //     if (IsMultiplayerAuthority())
-        //     {
-        //             Shoot();
-        //     }
-        // }
         if (@event.IsActionPressed("run") && _canRun)
         {
             Run();

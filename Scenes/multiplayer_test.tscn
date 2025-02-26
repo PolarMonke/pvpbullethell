@@ -2,7 +2,7 @@
 
 [ext_resource type="Script" path="res://Scripts/MultiplayerTest.cs" id="1_0wj3n"]
 [ext_resource type="PackedScene" uid="uid://dkvqs8cedf5j0" path="res://Prefabs/bullet_manager.tscn" id="2_xe5ip"]
-[ext_resource type="PackedScene" uid="uid://dh2uvcnuxnr2v" path="res://Prefabs/bullet.tscn" id="3_hgol6"]
+[ext_resource type="PackedScene" uid="uid://dh2uvcnuxnr2v" path="res://Prefabs/Bullets/bullet.tscn" id="3_hgol6"]
 
 [node name="MultiplayerTest" type="Node2D"]
 script = ExtResource("1_0wj3n")
