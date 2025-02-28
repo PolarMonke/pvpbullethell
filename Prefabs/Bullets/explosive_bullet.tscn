@@ -1,7 +1,11 @@
-[gd_scene load_steps=4 format=3 uid="uid://caw0poo284038"]
+[gd_scene load_steps=6 format=3 uid="uid://caw0poo284038"]
 
 [ext_resource type="Script" path="res://Scripts/Bullets/ExplosiveBullet.cs" id="1_mafxf"]
-[ext_resource type="Texture2D" uid="uid://i12dpb2rly7d" path="res://Sprites/RedBullet.png" id="2_xn1qc"]
+[ext_resource type="Texture2D" uid="uid://cjbp67i5lkcbm" path="res://Sprites/bullets/RedBullet.png" id="2_simam"]
+[ext_resource type="Texture2D" uid="uid://ciiyt7hj4aixn" path="res://Sprites/bullets/exolosion.svg" id="3_bxqe7"]
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_peyth"]
+radius = 16.0
 
 [sub_resource type="CircleShape2D" id="CircleShape2D_yti8w"]
 radius = 8.0
@@ -9,9 +13,25 @@ radius = 8.0
 [node name="ExplosiveBullet" type="Area2D"]
 script = ExtResource("1_mafxf")
 LifeTime = 5.0
-BulletTexture = ExtResource("2_xn1qc")
+BulletTexture = ExtResource("2_simam")
+
+[node name="ExplosionArea" type="Area2D" parent="."]
+scale = Vector2(0.996168, 1)
+monitoring = false
+
+[node name="ExplosionCollision" type="CollisionShape2D" parent="ExplosionArea"]
+scale = Vector2(0.48, 0.48)
+shape = SubResource("CircleShape2D_peyth")
+debug_color = Color(0.635144, 0.455343, 0.703864, 0.42)
+
+[node name="ExplosionSprite" type="Sprite2D" parent="ExplosionArea"]
+modulate = Color(1, 1, 1, 0.247059)
+scale = Vector2(0.0329019, 0.0324862)
+texture = ExtResource("3_bxqe7")
 
 [node name="Sprite2D" type="Sprite2D" parent="."]
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
 shape = SubResource("CircleShape2D_yti8w")
+
+[node name="AnimationPlayer" type="AnimationPlayer" parent="."]

@@ -7,7 +7,7 @@ using System.Collections;
 
 public partial class BossCharacter : BasicCharacter
 {
-	[Export] public float PatternCooldown = 2.0f;
+	[Export] public float PatternCooldown = 1.5f;
     private Timer _patternTimer;
     private List<Action> _shootingPatterns = new List<Action>();
     private int _currentPatternIndex = 0;
@@ -30,6 +30,7 @@ public partial class BossCharacter : BasicCharacter
 			_shootingPatterns.Add(ShootSpiral);
 			_shootingPatterns.Add(ShootSineWave);
 			_shootingPatterns.Add(ShootSun);
+			_shootingPatterns.Add(ShootExplosiveBullets);
         }
     }
 	protected override void HandleShooting()
@@ -57,6 +58,19 @@ public partial class BossCharacter : BasicCharacter
 		else
 		{
 			RpcId(1, nameof(RequestShoot), "Default", bulletSpawn.GlobalPosition, direction, GetMultiplayerAuthority());
+		}
+	}
+
+	[Rpc(MultiplayerApi.RpcMode.Authority)]
+	private void SpawnExplosiveBullet(Vector2 direction)
+	{
+		if (GetMultiplayerAuthority() == 1)
+		{
+			RequestShoot("Explosive", bulletSpawn.GlobalPosition, direction, GetMultiplayerAuthority());
+		}
+		else
+		{
+			RpcId(1, nameof(RequestShoot), "Explosive", bulletSpawn.GlobalPosition, direction, GetMultiplayerAuthority());
 		}
 	}
 
@@ -173,6 +187,26 @@ public partial class BossCharacter : BasicCharacter
 			yield return ToSignal(GetTree().CreateTimer(0.05), SceneTreeTimer.SignalName.Timeout);
 		}
 	}	
+
+	private void ShootExplosiveBullets()
+	{
+		SetAnimationState(AnimationState.Attack);
+        Rpc(nameof(SyncAnimationState), (int)AnimationState.Attack);
+
+        int bulletCount = 8;
+        float angleIncrement = 360f / bulletCount;
+
+        for (int i = 0; i < bulletCount; i++)
+        {
+            float angle = Mathf.DegToRad(i * angleIncrement);
+            Vector2 dir = new Vector2(Mathf.Cos(angle), Mathf.Sin(angle));
+            if (IsMultiplayerAuthority())
+            {
+                SpawnExplosiveBullet(dir);
+            }
+        }
+	}
+
     #endregion Shooting Patterns
 	private async void RunCoroutine(IEnumerator routine)
     {
