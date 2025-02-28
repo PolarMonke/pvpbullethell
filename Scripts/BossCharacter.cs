@@ -47,7 +47,7 @@ public partial class BossCharacter : BasicCharacter
         _currentPatternIndex = (_currentPatternIndex + 1) % _shootingPatterns.Count;
     }
 	
-	[Rpc(MultiplayerApi.RpcMode.Authority, CallLocal = true)]
+	[Rpc(MultiplayerApi.RpcMode.Authority)]
 	private void SpawnBullet(Vector2 direction)
 	{
 		if (GetMultiplayerAuthority() == 1)
@@ -160,8 +160,9 @@ public partial class BossCharacter : BasicCharacter
 		float time = 0.0f;
 		int bulletCount = 20;
 
-		Vector2 globalMousePosition = GetGlobalMousePosition();
-		Vector2 baseDirection = (globalMousePosition - GlobalPosition).Normalized();
+
+		Vector2 targetPosition = GetOtherPlayerPosition();
+		Vector2 baseDirection = (targetPosition - GlobalPosition).Normalized();
 
 		for (int i = 0; i < bulletCount; i++)
 		{
@@ -183,4 +184,24 @@ public partial class BossCharacter : BasicCharacter
             }
         }
     }
+
+	public Vector2 GetOtherPlayerPosition()
+	{
+		long playerId = 1;
+		foreach (long val in NetworkingManager.Instance.playerIds)
+		{
+			if (val != GetMultiplayerAuthority())
+			{
+				playerId = val;
+				break;
+			}
+		}
+		var otherPlayerNode = GetTree().Root.GetNodeOrNull<Node2D>($"/root/MainScene/{playerId}");
+		if (otherPlayerNode != null)
+		{
+			return otherPlayerNode.Position;
+		}
+		GD.PrintErr($"Player with ID {playerId} not found!");
+		return Vector2.Zero;
+	}
 }
