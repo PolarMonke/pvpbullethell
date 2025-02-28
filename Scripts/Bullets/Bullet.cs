@@ -11,7 +11,7 @@ public partial class Bullet : Area2D
     [Export] public Texture2D BulletTexture;
 
     protected Timer _lifeTimer;
-    protected Vector2 direction = Vector2.Zero;
+    protected Vector2 _direction = Vector2.Zero;
     public long HolderID;
     protected bool _damageApplied = false;
 
@@ -33,9 +33,9 @@ public partial class Bullet : Area2D
 
     public override void _PhysicsProcess(double delta)
     {
-        if (direction != Vector2.Zero)
+        if (_direction != Vector2.Zero)
         {
-            var velocity = direction * Speed * (float)delta;
+            var velocity = _direction * Speed * (float)delta;
             GlobalPosition += velocity;
         }
         if (Multiplayer.IsServer())
@@ -44,9 +44,9 @@ public partial class Bullet : Area2D
         }
     }
 
-    public void SetDirection(Vector2 direction)
+    public void SetDirection(Vector2 _direction)
     {
-        this.direction = direction;
+        this._direction = _direction;
     }
 
     protected virtual void OnBodyEntered(Node body)

@@ -130,9 +130,7 @@ public partial class BasicCharacter : CharacterBody2D
         {
             SetAnimationState(AnimationState.Die);
             _isDead = true;
-            NetworkingManager.Instance.PlayerStatuses[GetMultiplayerAuthority()] = true;
-            GD.Print(NetworkingManager.Instance.PlayerStatuses[GetMultiplayerAuthority()]);
-            NetworkingManager.Instance.SyncPlayerStatuses(NetworkingManager.Instance.PlayerStatuses);
+            GameManager.Instance.Lose();
             Rpc(nameof(DeathEffects));
         }
     }
@@ -165,6 +163,7 @@ public partial class BasicCharacter : CharacterBody2D
     {
         SetAnimationState(AnimationState.Attack);
         var direction = (GetGlobalMousePosition() - GlobalPosition).Normalized();
+
         if (GetMultiplayerAuthority() == 1)
 		{
 			RequestShoot("Default", bulletSpawn.GlobalPosition, direction, GetMultiplayerAuthority());

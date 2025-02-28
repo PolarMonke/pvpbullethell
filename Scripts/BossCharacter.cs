@@ -7,7 +7,7 @@ using System.Collections;
 
 public partial class BossCharacter : BasicCharacter
 {
-	[Export] public float PatternCooldown = 1.0f;
+	[Export] public float PatternCooldown = 2.0f;
     private Timer _patternTimer;
     private List<Action> _shootingPatterns = new List<Action>();
     private int _currentPatternIndex = 0;
@@ -39,6 +39,7 @@ public partial class BossCharacter : BasicCharacter
         //     bulletCooldownNode.Start(bulletCooldown);
         //     Shoot();
         // }
+		// TODO: Implement some kind of abilities
     }
 	private void OnPatternTimerTimeout()
     {
@@ -49,33 +50,23 @@ public partial class BossCharacter : BasicCharacter
 	[Rpc(MultiplayerApi.RpcMode.Authority, CallLocal = true)]
 	private void SpawnBullet(Vector2 direction)
 	{
-		var bulletInstance = bulletScene.Instantiate<Area2D>();
-		bulletInstance.GlobalPosition = bulletSpawn.GlobalPosition;
-
-		var bulletScript = bulletInstance as Bullet;
-		if (bulletScript != null)
-		{
-			bulletScript.HolderID = GetMultiplayerAuthority();
-			bulletScript.SetDirection(direction);
-		}
-
-		GetTree().Root.AddChild(bulletInstance);
-
 		if (GetMultiplayerAuthority() == 1)
 		{
-			RequestShoot("Default", bulletInstance.GlobalPosition, direction, bulletScript.HolderID);
+			RequestShoot("Default", bulletSpawn.GlobalPosition, direction, GetMultiplayerAuthority());
 		}
 		else
 		{
-			RpcId(1, nameof(RequestShoot), "Default", bulletInstance.GlobalPosition, direction, bulletScript.HolderID);
+			RpcId(1, nameof(RequestShoot), "Default", bulletSpawn.GlobalPosition, direction, GetMultiplayerAuthority());
 		}
-		//RequestShoot("Default", bulletInstance.GlobalPosition, direction, bulletScript.HolderID);
 	}
 
 	#region Shooting Patterns
 
     private void ShootCircle()
     {
+		SetAnimationState(AnimationState.Attack);
+        Rpc(nameof(SyncAnimationState), (int)AnimationState.Attack);
+
         int bulletCount = 16;
         float angleIncrement = 360f / bulletCount;
 
@@ -92,6 +83,8 @@ public partial class BossCharacter : BasicCharacter
 
 	private void ShootCross()
 	{
+		SetAnimationState(AnimationState.Attack);
+        Rpc(nameof(SyncAnimationState), (int)AnimationState.Attack);
 		RunCoroutine(CrossPattern());
 	}
 	private IEnumerator CrossPattern()
@@ -114,6 +107,8 @@ public partial class BossCharacter : BasicCharacter
 
 	private void ShootSpiral()
 	{
+		SetAnimationState(AnimationState.Attack);
+        Rpc(nameof(SyncAnimationState), (int)AnimationState.Attack);
 		RunCoroutine(SpiralPattern());
 	}
 	private IEnumerator SpiralPattern()

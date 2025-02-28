@@ -11,11 +11,10 @@ public partial class NetworkingManager : Node
     [Export] private PackedScene heroScene;
     [Export] private PackedScene bossScene;
 
-    public bool PlayerClass = false; //false - hero, true - boss for now
+    public bool PlayerClass = false; //false - hero, true - boss
     private ENetMultiplayerPeer _peer = new ENetMultiplayerPeer();
     public List<long> playerIds = new List<long>();
     public Godot.Collections.Dictionary<long, bool> PlayerClasses = new Godot.Collections.Dictionary<long, bool>();
-    public Godot.Collections.Dictionary<long, bool> PlayerStatuses = new Godot.Collections.Dictionary<long, bool>();
     [Signal]
     public delegate void PlayerClassesUpdatedEventHandler(Godot.Collections.Dictionary<long, bool> classes);
 
@@ -66,7 +65,6 @@ public partial class NetworkingManager : Node
         }
         playerIds.Clear();
         PlayerClasses.Clear();
-        PlayerStatuses.Clear();
         SpawnManager.Instance.playerNodes.Clear();
 
         Multiplayer.MultiplayerPeer = null;
@@ -98,29 +96,22 @@ public partial class NetworkingManager : Node
         {
             playerIds.Add(id);
             PlayerClasses.Add(id, false);
-            PlayerStatuses.Add(id, false);
             Rpc(nameof(SyncPlayerIDs), playerIds.ToArray());
             Rpc(nameof(SyncPlayerClasses), PlayerClasses);
-            Rpc(nameof(SyncPlayerStatuses), PlayerStatuses);
         }
     }
 
-    [Rpc(MultiplayerApi.RpcMode.AnyPeer)]
+    [Rpc(MultiplayerApi.RpcMode.AnyPeer, CallLocal = true)]
     private void SyncPlayerIDs(long[] ids)
     {
         playerIds = new List<long>(ids);
     }
 
-    [Rpc(MultiplayerApi.RpcMode.AnyPeer)]
+    [Rpc(MultiplayerApi.RpcMode.AnyPeer, CallLocal = true)]
     public void SyncPlayerClasses(Godot.Collections.Dictionary<long, bool> classes)
     {
         PlayerClasses = classes;
         EmitSignal(nameof(PlayerClassesUpdated), PlayerClasses); 
     }
 
-    [Rpc(MultiplayerApi.RpcMode.AnyPeer)]
-    public void SyncPlayerStatuses(Godot.Collections.Dictionary<long, bool> statuses)
-    {
-        PlayerStatuses = statuses;
-    }
 }

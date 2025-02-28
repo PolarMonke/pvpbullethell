@@ -1,10 +1,11 @@
 using Godot;
 using Godot.Collections;
+using System.Collections.Generic;
 
 public partial class BulletManager : Node2D
 {
     public static BulletManager Instance;
-    private Dictionary<string, PackedScene> _bulletScenes = new Dictionary<string, PackedScene>();
+    private Godot.Collections.Dictionary<string, PackedScene> _bulletScenes = new Godot.Collections.Dictionary<string, PackedScene>();
 
     public override void _Ready()
     {
@@ -28,8 +29,8 @@ public partial class BulletManager : Node2D
         }
     }
 
-    [Rpc(MultiplayerApi.RpcMode.AnyPeer, CallLocal = false)]
-    private void SpawnBulletOnClients(string bulletType, Vector2 position, Vector2 direction, long holderId)
+    [Rpc(MultiplayerApi.RpcMode.AnyPeer, CallLocal = true)]
+    public void SpawnBulletOnClients(string bulletType, Vector2 position, Vector2 direction, long holderId)
     {
         if (_bulletScenes.TryGetValue(bulletType, out var bulletScene))
         {
