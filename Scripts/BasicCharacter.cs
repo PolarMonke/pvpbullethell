@@ -13,8 +13,6 @@ public partial class BasicCharacter : CharacterBody2D
     protected bool _isDead = false;
 
     [Export] protected ProgressBar healthBar;
-
-    [Export] protected PackedScene bulletScene;
     [Export] protected Marker2D bulletSpawn;
     [Export] protected Timer bulletCooldownNode;
     [Export] protected float bulletCooldown = 0.3f;

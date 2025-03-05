@@ -45,7 +45,7 @@ public partial class BossCharacter : BasicCharacter
 	private void OnPatternTimerTimeout()
     {
         _shootingPatterns[_currentPatternIndex]?.Invoke();
-        _currentPatternIndex = (_currentPatternIndex + 1) % _shootingPatterns.Count;
+		_currentPatternIndex = new Random().Next(0, _shootingPatterns.Count);
     }
 	
 	[Rpc(MultiplayerApi.RpcMode.Authority)]
