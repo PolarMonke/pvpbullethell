@@ -1,4 +1,4 @@
-[gd_scene load_steps=50 format=3 uid="uid://d03i2hjl2p5lb"]
+[gd_scene load_steps=51 format=3 uid="uid://d03i2hjl2p5lb"]
 
 [ext_resource type="Texture2D" uid="uid://cxl7feiqu7p3g" path="res://Sprites/boss/Wanderer Magican/Attack_1.png" id="1_4c48n"]
 [ext_resource type="Script" path="res://Scripts/BossCharacter.cs" id="1_8ttk8"]
@@ -317,7 +317,10 @@ properties/0/spawn = true
 properties/0/replication_mode = 1
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_hhcv3"]
-size = Vector2(22.6959, 64.5322)
+size = Vector2(23.1893, 63.043)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_tg483"]
+size = Vector2(26, 64)
 
 [node name="BossCharacter" type="CharacterBody2D" node_paths=PackedStringArray("healthBar", "bulletSpawn", "bulletCooldownNode", "animatedSprite")]
 script = ExtResource("1_8ttk8")
@@ -339,8 +342,8 @@ position = Vector2(16, 16)
 [node name="MultiplayerSynchronizer" type="MultiplayerSynchronizer" parent="."]
 replication_config = SubResource("SceneReplicationConfig_gfbqo")
 
-[node name="Hitbox" type="CollisionShape2D" parent="."]
-position = Vector2(-4, 31)
+[node name="CollisionBox" type="CollisionShape2D" parent="."]
+position = Vector2(-3.75001, 31.75)
 scale = Vector2(1.0134, 1.00725)
 shape = SubResource("RectangleShape2D_hhcv3")
 one_way_collision_margin = 0.0
@@ -356,3 +359,9 @@ offset_right = 53.0
 offset_bottom = -11.0
 step = 1.0
 show_percentage = false
+
+[node name="HitboxArea" type="Area2D" parent="."]
+
+[node name="Hitbox" type="CollisionShape2D" parent="HitboxArea"]
+position = Vector2(-3, 32)
+shape = SubResource("RectangleShape2D_tg483")

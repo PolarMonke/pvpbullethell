@@ -76,11 +76,13 @@ public partial class BasicCharacter : CharacterBody2D
 
         MoveAndSlide();
 
+
         for (int i = 0; i < GetSlideCollisionCount(); i++)
         {
             KinematicCollision2D collision = GetSlideCollision(i);
-            if (collision.GetCollider() is BasicCharacter otherPlayer)
+            if (collision.GetCollider() is CollisionPolygon2D)
             {
+                GD.Print("Collided with wall");
                 Vector2 pushVector = Position - _previousPosition;
                 Position -= pushVector;
             }

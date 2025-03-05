@@ -65,6 +65,10 @@ public partial class Bullet : Area2D
                 }
             }
         }
+        if (body.Name == "Collision")
+        {
+            QueueFree();
+        }
     }
 
     protected virtual void DestroyBulletAfterTime()

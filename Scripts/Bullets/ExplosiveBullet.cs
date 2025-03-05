@@ -23,7 +23,7 @@ public partial class ExplosiveBullet : Bullet
             sprite.Texture = BulletTexture;
         }
         Damage = 15;
-        Speed = 50;
+        Speed = 60;
 
         _areaIncrement = ExplosionRadius / (0.3f / LifeTime);
     }
@@ -62,7 +62,6 @@ public partial class ExplosiveBullet : Bullet
     protected override void DestroyBulletAfterTime()
     {
         _explosionTime -= LifeTime;
-        GD.Print($"Time remaining: {_explosionTime}");
         Sprite2D sprite = GetNode<Sprite2D>("Sprite2D");
         if ((int)_explosionTime % 2 == 0)
         {

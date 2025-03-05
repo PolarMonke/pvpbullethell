@@ -1,4 +1,4 @@
-[gd_scene load_steps=46 format=3 uid="uid://d2yi4qakdybi7"]
+[gd_scene load_steps=47 format=3 uid="uid://d2yi4qakdybi7"]
 
 [ext_resource type="Script" path="res://Scripts/HeroCharacter.cs" id="1_x03yp"]
 [ext_resource type="Texture2D" uid="uid://cgjhrx5wi3je1" path="res://Sprites/hero/Countess_Vampire/Attack_1.png" id="2_e1dd1"]
@@ -303,6 +303,9 @@ properties/0/replication_mode = 1
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_5ujdw"]
 size = Vector2(11.8413, 11.9136)
 
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_e2mcs"]
+size = Vector2(39, 70)
+
 [node name="HeroCharacter" type="CharacterBody2D" node_paths=PackedStringArray("healthBar", "bulletSpawn", "bulletCooldownNode", "animatedSprite")]
 script = ExtResource("1_x03yp")
 healthBar = NodePath("HealthBar")
@@ -313,7 +316,7 @@ animatedSprite = NodePath("AnimatedSprite2D")
 
 [node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="."]
 sprite_frames = SubResource("SpriteFrames_1ki6g")
-animation = &"Dead"
+animation = &"Attack"
 
 [node name="BulletSpawn" type="Marker2D" parent="AnimatedSprite2D"]
 position = Vector2(16, 16)
@@ -321,14 +324,16 @@ position = Vector2(16, 16)
 [node name="MultiplayerSynchronizer" type="MultiplayerSynchronizer" parent="."]
 replication_config = SubResource("SceneReplicationConfig_t8fe7")
 
-[node name="Hitbox" type="CollisionShape2D" parent="."]
+[node name="HitboxArea" type="Area2D" parent="."]
+
+[node name="Hitbox" type="CollisionShape2D" parent="HitboxArea"]
 position = Vector2(5.96046e-08, 33)
 scale = Vector2(1.0134, 1.00725)
 shape = SubResource("RectangleShape2D_5ujdw")
 one_way_collision_margin = 0.0
 debug_color = Color(1, 0.270588, 0.756863, 0.482353)
 
-[node name="Sprite2D" type="Sprite2D" parent="Hitbox"]
+[node name="Sprite2D" type="Sprite2D" parent="HitboxArea/Hitbox"]
 position = Vector2(4.02331e-07, -7.15256e-07)
 scale = Vector2(0.0925104, 0.0930752)
 texture = ExtResource("9_p2a1l")
@@ -343,3 +348,7 @@ offset_right = 53.0
 offset_bottom = -11.0
 step = 1.0
 show_percentage = false
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+position = Vector2(-9.5, 29)
+shape = SubResource("RectangleShape2D_e2mcs")
