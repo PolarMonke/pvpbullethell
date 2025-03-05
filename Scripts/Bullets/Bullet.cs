@@ -29,6 +29,7 @@ public partial class Bullet : Area2D
             var sprite = GetNode<Sprite2D>("Sprite2D");
             sprite.Texture = BulletTexture;
         }
+        Connect("area_entered", Callable.From((Area2D area) => OnAreaEntered(area)));
     }
 
     public override void _PhysicsProcess(double delta)
@@ -59,9 +60,9 @@ public partial class Bullet : Area2D
             {
                 if (body.Name != HolderID.ToString())
                 {
-                    player.Rpc(nameof(player.TakeDamage), Damage);
-                    _damageApplied = true;
-                    QueueFree();
+                    //player.Rpc(nameof(player.TakeDamage), Damage);
+                    //_damageApplied = true;
+                    //QueueFree();
                 }
             }
         }
@@ -70,6 +71,16 @@ public partial class Bullet : Area2D
             QueueFree();
         }
     }
+    protected virtual void OnAreaEntered(Area2D area)
+    {
+        if (_damageApplied) return;
+        if (area.GetParent() is BasicCharacter player && player.Name != HolderID.ToString())
+        {
+            _damageApplied = true;
+            QueueFree();
+        }
+    }
+
 
     protected virtual void DestroyBulletAfterTime()
     {

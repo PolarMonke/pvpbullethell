@@ -30,6 +30,9 @@ public partial class BasicCharacter : CharacterBody2D
     protected enum AnimationState {Idle, Walk, Attack, Run, Hurt, Die}    
     protected AnimationState currentAnimationState = AnimationState.Idle;
 
+    [Export] protected Area2D _hitbox;
+    [Signal]
+    public delegate void HitboxHitEventHandler(int damage);
     public override void _EnterTree()
     {
         if (Name != null)
@@ -43,6 +46,10 @@ public partial class BasicCharacter : CharacterBody2D
             UpdateHealthDisplay();
 
             animatedSprite.AnimationFinished += OnAnimationFinished;
+
+            _hitbox = GetNode<Area2D>("HitboxArea");
+            _hitbox.Connect("area_entered", Callable.From((Area2D area) => OnHitboxAreaEntered(area)));
+            this.Connect(nameof(HitboxHit), Callable.From((int damage) => TakeDamage(damage)));
 
             GD.Print($"Player {Name} entered tree with authority: {IsMultiplayerAuthority()}");
         }
@@ -91,6 +98,13 @@ public partial class BasicCharacter : CharacterBody2D
         Rpc(nameof(SetPlayerPosition), Position);
     }
     
+    private void OnHitboxAreaEntered(Area2D area)
+    {
+        if (area is Bullet bullet && bullet.HolderID.ToString() != Name)
+        {
+            EmitSignal(nameof(HitboxHit), bullet.Damage);
+        }
+    }
 
     [Rpc(MultiplayerApi.RpcMode.AnyPeer)]
     public void TakeDamage(int damage)
