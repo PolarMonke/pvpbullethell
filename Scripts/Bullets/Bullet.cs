@@ -30,6 +30,7 @@ public partial class Bullet : Area2D
             sprite.Texture = BulletTexture;
         }
         Connect("area_entered", Callable.From((Area2D area) => OnAreaEntered(area)));
+        Connect("body_entered", Callable.From((Node body) => OnBodyEntered(body)));
     }
 
     public override void _PhysicsProcess(double delta)
@@ -53,19 +54,6 @@ public partial class Bullet : Area2D
     protected virtual void OnBodyEntered(Node body)
     {
         if (_damageApplied) return;
-        //GD.Print(HolderID.ToString() + " - " + body.Name); 
-        if (body.Name != HolderID.ToString())
-        {
-            if (body is BasicCharacter player)
-            {
-                if (body.Name != HolderID.ToString())
-                {
-                    //player.Rpc(nameof(player.TakeDamage), Damage);
-                    //_damageApplied = true;
-                    //QueueFree();
-                }
-            }
-        }
         if (body.Name == "Collision")
         {
             QueueFree();

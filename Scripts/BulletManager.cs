@@ -19,6 +19,7 @@ public partial class BulletManager : Node2D
         }
         _bulletScenes.Add("Default", GD.Load<PackedScene>("res://Prefabs/Bullets/bullet.tscn"));
         _bulletScenes.Add("Explosive", GD.Load<PackedScene>("res://Prefabs/Bullets/explosive_bullet.tscn"));
+        _bulletScenes.Add("Boss", GD.Load<PackedScene>("res://Prefabs/Bullets/boss_bullet.tscn"));
     }
 
     public void HandleBulletSpawned(string bulletType, Vector2 position, Vector2 direction, long holderId)

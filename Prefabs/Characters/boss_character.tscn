@@ -2,7 +2,7 @@
 
 [ext_resource type="Texture2D" uid="uid://cxl7feiqu7p3g" path="res://Sprites/boss/Wanderer Magican/Attack_1.png" id="1_4c48n"]
 [ext_resource type="Script" path="res://Scripts/BossCharacter.cs" id="1_8ttk8"]
-[ext_resource type="PackedScene" uid="uid://dh2uvcnuxnr2v" path="res://Prefabs/Bullets/bullet.tscn" id="2_7e62w"]
+[ext_resource type="PackedScene" uid="uid://jfiaejdbqonp" path="res://Prefabs/Bullets/boss_bullet.tscn" id="2_mphmq"]
 [ext_resource type="Texture2D" uid="uid://h3rkqyxqh2m5" path="res://Sprites/boss/Wanderer Magican/Dead.png" id="2_susch"]
 [ext_resource type="Texture2D" uid="uid://bd8lw1qvvhskh" path="res://Sprites/boss/Wanderer Magican/Hurt.png" id="3_60755"]
 [ext_resource type="Texture2D" uid="uid://d4hn4dnqclssa" path="res://Sprites/boss/Wanderer Magican/Idle.png" id="4_roiv3"]
@@ -327,7 +327,7 @@ script = ExtResource("1_8ttk8")
 MaxHealth = 1000
 Health = 1000
 healthBar = NodePath("HealthBar")
-bulletScene = ExtResource("2_7e62w")
+bulletScene = ExtResource("2_mphmq")
 bulletSpawn = NodePath("AnimatedSprite2D/BulletSpawn")
 bulletCooldownNode = NodePath("BulletCooldownNode")
 animatedSprite = NodePath("AnimatedSprite2D")

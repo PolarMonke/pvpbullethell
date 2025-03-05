@@ -53,11 +53,11 @@ public partial class BossCharacter : BasicCharacter
 	{
 		if (GetMultiplayerAuthority() == 1)
 		{
-			RequestShoot("Default", bulletSpawn.GlobalPosition, direction, GetMultiplayerAuthority());
+			RequestShoot("Boss", bulletSpawn.GlobalPosition, direction, GetMultiplayerAuthority());
 		}
 		else
 		{
-			RpcId(1, nameof(RequestShoot), "Default", bulletSpawn.GlobalPosition, direction, GetMultiplayerAuthority());
+			RpcId(1, nameof(RequestShoot), "Boss", bulletSpawn.GlobalPosition, direction, GetMultiplayerAuthority());
 		}
 	}
 

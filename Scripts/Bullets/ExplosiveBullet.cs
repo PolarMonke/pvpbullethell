@@ -62,7 +62,7 @@ public partial class ExplosiveBullet : Bullet
     protected override void DestroyBulletAfterTime()
     {
         _explosionTime -= LifeTime;
-        Sprite2D sprite = GetNode<Sprite2D>("Sprite2D");
+        AnimatedSprite2D sprite = GetNode<AnimatedSprite2D>("AnimatedSprite2D");
         if ((int)_explosionTime % 2 == 0)
         {
             sprite.Modulate = new Color(1f, 1f, 1f, 1f);

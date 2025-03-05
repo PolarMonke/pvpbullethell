@@ -1,8 +1,8 @@
-[gd_scene load_steps=6 format=3 uid="uid://caw0poo284038"]
+[gd_scene load_steps=11 format=3 uid="uid://caw0poo284038"]
 
 [ext_resource type="Script" path="res://Scripts/Bullets/ExplosiveBullet.cs" id="1_mafxf"]
-[ext_resource type="Texture2D" uid="uid://cjbp67i5lkcbm" path="res://Sprites/bullets/RedBullet.png" id="2_simam"]
 [ext_resource type="Texture2D" uid="uid://ciiyt7hj4aixn" path="res://Sprites/bullets/exolosion.svg" id="3_bxqe7"]
+[ext_resource type="Texture2D" uid="uid://bi5et307e0obq" path="res://Sprites/Effect and Bullet 16x16/Water Effect and Bullet 16x16.png" id="3_ctcd8"]
 
 [sub_resource type="CircleShape2D" id="CircleShape2D_peyth"]
 radius = 16.0
@@ -10,10 +10,46 @@ radius = 16.0
 [sub_resource type="CircleShape2D" id="CircleShape2D_yti8w"]
 radius = 8.0
 
+[sub_resource type="AtlasTexture" id="AtlasTexture_pwa57"]
+atlas = ExtResource("3_ctcd8")
+region = Rect2(224, 192, 16, 16)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_frktf"]
+atlas = ExtResource("3_ctcd8")
+region = Rect2(240, 192, 16, 16)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_if2yf"]
+atlas = ExtResource("3_ctcd8")
+region = Rect2(256, 192, 16, 16)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_ncso5"]
+atlas = ExtResource("3_ctcd8")
+region = Rect2(272, 192, 16, 16)
+
+[sub_resource type="SpriteFrames" id="SpriteFrames_7y2y3"]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_pwa57")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_frktf")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_if2yf")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_ncso5")
+}],
+"loop": true,
+"name": &"default",
+"speed": 5.0
+}]
+
 [node name="ExplosiveBullet" type="Area2D"]
+scale = Vector2(1.5, 1.5)
 script = ExtResource("1_mafxf")
 LifeTime = 5.0
-BulletTexture = ExtResource("2_simam")
 
 [node name="ExplosionArea" type="Area2D" parent="."]
 scale = Vector2(0.996168, 1)
@@ -29,9 +65,11 @@ modulate = Color(1, 1, 1, 0.247059)
 scale = Vector2(0.0329019, 0.0324862)
 texture = ExtResource("3_bxqe7")
 
-[node name="Sprite2D" type="Sprite2D" parent="."]
-
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
 shape = SubResource("CircleShape2D_yti8w")
 
 [node name="AnimationPlayer" type="AnimationPlayer" parent="."]
+
+[node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="."]
+sprite_frames = SubResource("SpriteFrames_7y2y3")
+frame_progress = 0.716563
