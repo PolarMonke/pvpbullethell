@@ -25,12 +25,12 @@ public partial class BossCharacter : BasicCharacter
 			_patternTimer.Timeout += OnPatternTimerTimeout;
 			_patternTimer.Start();
 
-			_shootingPatterns.Add(ShootCircle);
-			_shootingPatterns.Add(ShootCross);
-			_shootingPatterns.Add(ShootSpiral);
-			_shootingPatterns.Add(ShootSineWave);
-			_shootingPatterns.Add(ShootSun);
-			_shootingPatterns.Add(ShootExplosiveBullets);
+			// _shootingPatterns.Add(ShootCircle);
+			// _shootingPatterns.Add(ShootCross);
+			// _shootingPatterns.Add(ShootSpiral);
+			// _shootingPatterns.Add(ShootSineWave);
+			// _shootingPatterns.Add(ShootSun);
+			// _shootingPatterns.Add(ShootExplosiveBullets);
         }
     }
 	protected override void HandleShooting()
@@ -49,28 +49,36 @@ public partial class BossCharacter : BasicCharacter
     }
 	
 	[Rpc(MultiplayerApi.RpcMode.Authority)]
-	private void SpawnBullet(Vector2 direction)
+	private void SpawnBullet(Vector2 direction, string type)
 	{
 		if (GetMultiplayerAuthority() == 1)
 		{
-			RequestShoot("Boss", bulletSpawn.GlobalPosition, direction, GetMultiplayerAuthority());
+			RequestShoot(type, bulletSpawn.GlobalPosition, direction, GetMultiplayerAuthority());
 		}
 		else
 		{
-			RpcId(1, nameof(RequestShoot), "Boss", bulletSpawn.GlobalPosition, direction, GetMultiplayerAuthority());
+			RpcId(1, nameof(RequestShoot), type, bulletSpawn.GlobalPosition, direction, GetMultiplayerAuthority());
 		}
 	}
 
+	[Rpc(MultiplayerApi.RpcMode.AnyPeer, CallLocal = true)]
+    protected void RequestShoot(string type, Vector2 position, Vector2 direction, long id, int speed)
+    {
+        if (Multiplayer.IsServer())
+        {
+            BulletManager.Instance.HandleBulletSpawned(type, position, direction, id, speed);
+        }
+    }
 	[Rpc(MultiplayerApi.RpcMode.Authority)]
-	private void SpawnExplosiveBullet(Vector2 direction)
+	private void SpawnBullet(Vector2 direction, string type, int speed)
 	{
 		if (GetMultiplayerAuthority() == 1)
 		{
-			RequestShoot("Explosive", bulletSpawn.GlobalPosition, direction, GetMultiplayerAuthority());
+			RequestShoot("Boss", bulletSpawn.GlobalPosition, direction, GetMultiplayerAuthority(), speed);
 		}
 		else
 		{
-			RpcId(1, nameof(RequestShoot), "Explosive", bulletSpawn.GlobalPosition, direction, GetMultiplayerAuthority());
+			RpcId(1, nameof(RequestShoot), "Boss", bulletSpawn.GlobalPosition, direction, GetMultiplayerAuthority(), speed);
 		}
 	}
 
@@ -90,7 +98,7 @@ public partial class BossCharacter : BasicCharacter
             Vector2 dir = new Vector2(Mathf.Cos(angle), Mathf.Sin(angle));
             if (IsMultiplayerAuthority())
             {
-                SpawnBullet(dir);
+                SpawnBullet(dir, "Boss");
             }
         }
     }
@@ -113,7 +121,7 @@ public partial class BossCharacter : BasicCharacter
 			{
 				angle = Mathf.DegToRad(j * 90);
 				Vector2 dir = new Vector2(Mathf.Cos(angle), Mathf.Sin(angle));
-				SpawnBullet(dir);
+				SpawnBullet(dir, "Boss");
 			}	
 			yield return ToSignal(GetTree().CreateTimer(0.1), SceneTreeTimer.SignalName.Timeout);
 		}
@@ -132,7 +140,7 @@ public partial class BossCharacter : BasicCharacter
 		{
 			float angle = Mathf.DegToRad(i * 10);
 			Vector2 dir = new Vector2(Mathf.Cos(angle), Mathf.Sin(angle));
-			SpawnBullet(dir);
+			SpawnBullet(dir, "Boss");
 			yield return ToSignal(GetTree().CreateTimer(0.05), SceneTreeTimer.SignalName.Timeout);
 		}
 	}
@@ -153,7 +161,7 @@ public partial class BossCharacter : BasicCharacter
 			{
 				float angle = Mathf.DegToRad(i * 10 + j * 90);
 				Vector2 dir = new Vector2(Mathf.Cos(angle), Mathf.Sin(angle));
-				SpawnBullet(dir);
+				SpawnBullet(dir, "Boss");
 			}
 			yield return ToSignal(GetTree().CreateTimer(0.05), SceneTreeTimer.SignalName.Timeout);
 		}
@@ -183,7 +191,7 @@ public partial class BossCharacter : BasicCharacter
 			time += 0.1f;
 			float angleOffset = Mathf.Sin(time * frequency) * amplitude;
 			Vector2 dir = baseDirection.Rotated(angleOffset);
-			SpawnBullet(dir);
+			SpawnBullet(dir, "Boss");
 			yield return ToSignal(GetTree().CreateTimer(0.05), SceneTreeTimer.SignalName.Timeout);
 		}
 	}	
@@ -202,12 +210,41 @@ public partial class BossCharacter : BasicCharacter
             Vector2 dir = new Vector2(Mathf.Cos(angle), Mathf.Sin(angle));
             if (IsMultiplayerAuthority())
             {
-                SpawnExplosiveBullet(dir);
+                SpawnBullet(dir, "Explosive");
             }
         }
 	}
 
     #endregion Shooting Patterns
+
+	#region Special Patternss
+
+	private void ShootOrtodoxCross()
+	{
+		SetAnimationState(AnimationState.Attack);
+        Rpc(nameof(SyncAnimationState), (int)AnimationState.Attack);
+		RunCoroutine(OrtodoxCrossPattern());
+	}
+	private IEnumerator OrtodoxCrossPattern()
+	{
+		int rowCount = 8;
+		int sideCount = 4;
+
+		for (int i = 0; i < rowCount; i++)
+		{
+			float angle = 0.0f;
+			for (int j = 0; j < sideCount; j++)
+			{
+				angle = Mathf.DegToRad(j * 90);
+				Vector2 dir = new Vector2(Mathf.Cos(angle), Mathf.Sin(angle));
+				SpawnBullet(dir, "Boss");
+			}	
+			yield return ToSignal(GetTree().CreateTimer(0.1), SceneTreeTimer.SignalName.Timeout);
+		}
+	}
+
+
+	#endregion Special Patterns
 	private async void RunCoroutine(IEnumerator routine)
     {
         while (routine.MoveNext())

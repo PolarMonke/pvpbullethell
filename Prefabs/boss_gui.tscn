@@ -1,0 +1,46 @@
+[gd_scene load_steps=5 format=3 uid="uid://6d0n1as2stmo"]
+
+[ext_resource type="Texture2D" uid="uid://bwlgt3nqdgobv" path="res://Sprites/GUI/guided_rocket.png" id="1_bku56"]
+[ext_resource type="Texture2D" uid="uid://bq5a81pw0tnoh" path="res://Sprites/GUI/bullet_rain.png" id="2_bw5ku"]
+[ext_resource type="Texture2D" uid="uid://ckdcr35saj1ih" path="res://Sprites/GUI/cross.png" id="3_x27yp"]
+[ext_resource type="Texture2D" uid="uid://dk3y3i414ivc8" path="res://Sprites/GUI/islam.png" id="4_t67l3"]
+
+[node name="BossGui" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="GuidedRocket" type="Button" parent="."]
+modulate = Color(1, 1, 1, 0.439216)
+offset_right = 40.0
+offset_bottom = 40.0
+scale = Vector2(2.5, 2.5)
+icon = ExtResource("1_bku56")
+
+[node name="BulletRain" type="Button" parent="."]
+modulate = Color(1, 1, 1, 0.439216)
+layout_mode = 0
+offset_left = 104.0
+offset_right = 144.0
+offset_bottom = 40.0
+scale = Vector2(2.5, 2.5)
+icon = ExtResource("2_bw5ku")
+
+[node name="Cross" type="Button" parent="."]
+modulate = Color(1, 1, 1, 0.439216)
+offset_left = 208.0
+offset_right = 248.0
+offset_bottom = 40.0
+scale = Vector2(2.5, 2.5)
+icon = ExtResource("3_x27yp")
+
+[node name="Islam" type="Button" parent="."]
+modulate = Color(1, 1, 1, 0.439216)
+offset_left = 312.0
+offset_right = 352.0
+offset_bottom = 40.0
+scale = Vector2(2.5, 2.5)
+icon = ExtResource("4_t67l3")
