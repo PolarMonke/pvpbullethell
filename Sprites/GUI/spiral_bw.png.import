@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://d0brb5gloal8x"
-path="res://.godot/imported/cross.png-c6225de57e6c5fc40431642eb0a8cb8c.ctex"
+uid="uid://da7a8vhcynv4i"
+path="res://.godot/imported/spiral_bw.png-70df7178b061a210a7ae95dd2de628c5.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://Sprites/GUI/cross.png"
-dest_files=["res://.godot/imported/cross.png-c6225de57e6c5fc40431642eb0a8cb8c.ctex"]
+source_file="res://Sprites/GUI/spiral_bw.png"
+dest_files=["res://.godot/imported/spiral_bw.png-70df7178b061a210a7ae95dd2de628c5.ctex"]
 
 [params]
 

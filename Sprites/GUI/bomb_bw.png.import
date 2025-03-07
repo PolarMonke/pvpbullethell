@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://bwlgt3nqdgobv"
-path="res://.godot/imported/guided_rocket.png-699df6affc97cc2f0c9d92f60925b2d4.ctex"
+uid="uid://cvcoi66qvi4cm"
+path="res://.godot/imported/bomb_bw.png-71fc1bfeb0ad39ae6291fb1334da196a.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://Sprites/GUI/guided_rocket.png"
-dest_files=["res://.godot/imported/guided_rocket.png-699df6affc97cc2f0c9d92f60925b2d4.ctex"]
+source_file="res://Sprites/GUI/bomb_bw.png"
+dest_files=["res://.godot/imported/bomb_bw.png-71fc1bfeb0ad39ae6291fb1334da196a.ctex"]
 
 [params]
 

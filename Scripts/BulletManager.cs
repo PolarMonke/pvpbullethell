@@ -49,16 +49,16 @@ public partial class BulletManager : Node2D
         }
     }
 
-    public void HandleBulletSpawned(string bulletType, Vector2 position, Vector2 direction, long holderId, int speed)
+    public void HandleBulletSpawned(string bulletType, Vector2 position, Vector2 direction, long holderId, int speed, float lifeTime)
     {
         if (Multiplayer.IsServer())
         {
-            Rpc(nameof(SpawnBulletOnClients), bulletType, position, direction, holderId);
+            Rpc(nameof(SpawnBulletOnClients), bulletType, position, direction, holderId, speed, lifeTime);
         }
     }
 
     [Rpc(MultiplayerApi.RpcMode.AnyPeer, CallLocal = true)]
-    public void SpawnBulletOnClients(string bulletType, Vector2 position, Vector2 direction, long holderId, int speed)
+    public void SpawnBulletOnClients(string bulletType, Vector2 position, Vector2 direction, long holderId, int speed, float lifeTime)
     {
         if (_bulletScenes.TryGetValue(bulletType, out var bulletScene))
         {
@@ -72,6 +72,7 @@ public partial class BulletManager : Node2D
             {
                 bulletScript.HolderID = holderId;
                 bulletScript.Speed = speed;
+                bulletScript.LifeTime = lifeTime;
                 bulletScript.SetDirection(direction);
             }
         }

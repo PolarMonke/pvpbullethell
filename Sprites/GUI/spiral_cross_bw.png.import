@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://dk3y3i414ivc8"
-path="res://.godot/imported/islam.png-a972c63b376e5d8e93cf1555249d0456.ctex"
+uid="uid://fc262dowaj2e"
+path="res://.godot/imported/spiral_cross_bw.png-703e6e05e5fa418fb19805c5c94a5b8f.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://Sprites/GUI/islam.png"
-dest_files=["res://.godot/imported/islam.png-a972c63b376e5d8e93cf1555249d0456.ctex"]
+source_file="res://Sprites/GUI/spiral_cross_bw.png"
+dest_files=["res://.godot/imported/spiral_cross_bw.png-703e6e05e5fa418fb19805c5c94a5b8f.ctex"]
 
 [params]
 

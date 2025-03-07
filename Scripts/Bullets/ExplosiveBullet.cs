@@ -31,17 +31,19 @@ public partial class ExplosiveBullet : Bullet
     protected override void OnBodyEntered(Node body)
     {
         if (_damageApplied) return;
-        if (body.Name != HolderID.ToString())
+        if (body.Name == "Collision")
         {
-            if (body is BasicCharacter player)
-            {
-                if (body.Name != HolderID.ToString())
-                {
-                    player.Rpc(nameof(player.TakeDamage), Damage);
-                    _damageApplied = true;
-                    QueueFree();
-                }
-            }
+            QueueFree();
+        }
+    }
+    protected override void OnAreaEntered(Area2D area)
+    {
+        if (_damageApplied) return;
+        if (area.GetParent() is BasicCharacter player && player.Name != HolderID.ToString())
+        {
+            player.Rpc(nameof(player.TakeDamage), Damage);
+            _damageApplied = true;
+            QueueFree();
         }
     }
 

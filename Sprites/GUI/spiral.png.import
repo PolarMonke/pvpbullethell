@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://bq5a81pw0tnoh"
-path="res://.godot/imported/bullet_rain.png-57670fc69d4c87f2b2813479a1e7e21d.ctex"
+uid="uid://bkbhwvq0k03a0"
+path="res://.godot/imported/spiral.png-e5ce7c18ed493d0cdcf1843f01ae4790.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://Sprites/GUI/bullet_rain.png"
-dest_files=["res://.godot/imported/bullet_rain.png-57670fc69d4c87f2b2813479a1e7e21d.ctex"]
+source_file="res://Sprites/GUI/spiral.png"
+dest_files=["res://.godot/imported/spiral.png-e5ce7c18ed493d0cdcf1843f01ae4790.ctex"]
 
 [params]
 

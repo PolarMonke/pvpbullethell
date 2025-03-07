@@ -9,8 +9,10 @@ public partial class SpawnManager : Node2D
 	public static SpawnManager Instance { get; private set; }
     [Export] private PackedScene heroScene;
     [Export] private PackedScene bossScene;
+    [Export] private PackedScene bossGUIScene;
     private bool _playerClassSwitch;
     public Dictionary<long, Node2D> playerNodes = new Dictionary<long, Node2D>();
+    
 
 	public override void _Ready()
     {
@@ -38,7 +40,7 @@ public partial class SpawnManager : Node2D
     {
         if (playerNodes.ContainsKey(id)) return;
 
-        Node2D player = isBoss ? bossScene.Instantiate<Node2D>() : heroScene.Instantiate<Node2D>();
+        Node2D player = isBoss ? bossScene.Instantiate<Node2D>() : heroScene.Instantiate<Node2D>(); 
         player.Name = id.ToString();
         player.Position = isBoss ? new Vector2(200, 0) : new Vector2(-200, 0);
         

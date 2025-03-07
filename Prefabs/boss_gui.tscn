@@ -1,9 +1,17 @@
-[gd_scene load_steps=5 format=3 uid="uid://6d0n1as2stmo"]
+[gd_scene load_steps=13 format=3 uid="uid://6d0n1as2stmo"]
 
-[ext_resource type="Texture2D" uid="uid://bwlgt3nqdgobv" path="res://Sprites/GUI/guided_rocket.png" id="1_bku56"]
-[ext_resource type="Texture2D" uid="uid://bq5a81pw0tnoh" path="res://Sprites/GUI/bullet_rain.png" id="2_bw5ku"]
-[ext_resource type="Texture2D" uid="uid://ckdcr35saj1ih" path="res://Sprites/GUI/cross.png" id="3_x27yp"]
-[ext_resource type="Texture2D" uid="uid://dk3y3i414ivc8" path="res://Sprites/GUI/islam.png" id="4_t67l3"]
+[ext_resource type="Texture2D" uid="uid://b7xlm2aoq35qw" path="res://Sprites/GUI/circle_bw.png" id="1_irpno"]
+[ext_resource type="Script" path="res://Scripts/BossGui.cs" id="1_ls6xc"]
+[ext_resource type="Texture2D" uid="uid://coeelvwuy4mfs" path="res://Sprites/GUI/circle.png" id="2_67sjo"]
+[ext_resource type="Texture2D" uid="uid://cvcoi66qvi4cm" path="res://Sprites/GUI/bomb_bw.png" id="3_8yfga"]
+[ext_resource type="Script" path="res://Scripts/ProgressButton.cs" id="4_3a56g"]
+[ext_resource type="Texture2D" uid="uid://3h04hng6tsat" path="res://Sprites/GUI/bomb.png" id="4_q2eim"]
+[ext_resource type="Texture2D" uid="uid://gyg8rvn3qju3" path="res://Sprites/GUI/sine_wave_bw.png" id="5_05vs6"]
+[ext_resource type="Texture2D" uid="uid://cwotxuxx63xgx" path="res://Sprites/GUI/sine_wave.png" id="6_meoqs"]
+[ext_resource type="Texture2D" uid="uid://da7a8vhcynv4i" path="res://Sprites/GUI/spiral_bw.png" id="7_k1xc8"]
+[ext_resource type="Texture2D" uid="uid://bkbhwvq0k03a0" path="res://Sprites/GUI/spiral.png" id="8_w16i8"]
+[ext_resource type="Texture2D" uid="uid://fc262dowaj2e" path="res://Sprites/GUI/spiral_cross_bw.png" id="9_dairp"]
+[ext_resource type="Texture2D" uid="uid://co7tqgf1nwyhf" path="res://Sprites/GUI/spiral_cross.png" id="10_rsapa"]
 
 [node name="BossGui" type="Control"]
 layout_mode = 3
@@ -12,35 +20,99 @@ anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
+script = ExtResource("1_ls6xc")
 
-[node name="GuidedRocket" type="Button" parent="."]
-modulate = Color(1, 1, 1, 0.439216)
-offset_right = 40.0
-offset_bottom = 40.0
-scale = Vector2(2.5, 2.5)
-icon = ExtResource("1_bku56")
+[node name="Circle" type="TextureProgressBar" parent="."]
+offset_left = 320.0
+offset_top = 448.0
+offset_right = 448.0
+offset_bottom = 576.0
+scale = Vector2(0.5, 0.5)
+texture_under = ExtResource("1_irpno")
+texture_over = ExtResource("2_67sjo")
+texture_progress = ExtResource("2_67sjo")
+script = ExtResource("4_3a56g")
+Cooldown = 2.0
 
-[node name="BulletRain" type="Button" parent="."]
-modulate = Color(1, 1, 1, 0.439216)
+[node name="Button" type="Button" parent="Circle"]
 layout_mode = 0
-offset_left = 104.0
-offset_right = 144.0
-offset_bottom = 40.0
-scale = Vector2(2.5, 2.5)
-icon = ExtResource("2_bw5ku")
+offset_right = 128.0
+offset_bottom = 128.0
+theme_type_variation = &"FlatButton"
 
-[node name="Cross" type="Button" parent="."]
-modulate = Color(1, 1, 1, 0.439216)
-offset_left = 208.0
-offset_right = 248.0
-offset_bottom = 40.0
-scale = Vector2(2.5, 2.5)
-icon = ExtResource("3_x27yp")
+[node name="Bomb" type="TextureProgressBar" parent="."]
+layout_mode = 0
+offset_left = 384.0
+offset_top = 448.0
+offset_right = 512.0
+offset_bottom = 576.0
+scale = Vector2(0.5, 0.5)
+texture_under = ExtResource("3_8yfga")
+texture_over = ExtResource("4_q2eim")
+texture_progress = ExtResource("4_q2eim")
+script = ExtResource("4_3a56g")
+Skill = 1
+Cooldown = 6.0
 
-[node name="Islam" type="Button" parent="."]
-modulate = Color(1, 1, 1, 0.439216)
-offset_left = 312.0
-offset_right = 352.0
-offset_bottom = 40.0
-scale = Vector2(2.5, 2.5)
-icon = ExtResource("4_t67l3")
+[node name="Button" type="Button" parent="Bomb"]
+layout_mode = 0
+offset_right = 128.0
+offset_bottom = 128.0
+theme_type_variation = &"FlatButton"
+
+[node name="SineWave" type="TextureProgressBar" parent="."]
+offset_left = 448.0
+offset_top = 448.0
+offset_right = 576.0
+offset_bottom = 576.0
+scale = Vector2(0.5, 0.5)
+texture_under = ExtResource("5_05vs6")
+texture_over = ExtResource("6_meoqs")
+texture_progress = ExtResource("6_meoqs")
+script = ExtResource("4_3a56g")
+Skill = 2
+Cooldown = 3.0
+
+[node name="Button" type="Button" parent="SineWave"]
+layout_mode = 0
+offset_right = 128.0
+offset_bottom = 128.0
+theme_type_variation = &"FlatButton"
+
+[node name="Spiral" type="TextureProgressBar" parent="."]
+offset_left = 512.0
+offset_top = 448.0
+offset_right = 640.0
+offset_bottom = 576.0
+scale = Vector2(0.5, 0.5)
+texture_under = ExtResource("7_k1xc8")
+texture_over = ExtResource("8_w16i8")
+texture_progress = ExtResource("8_w16i8")
+script = ExtResource("4_3a56g")
+Skill = 3
+Cooldown = 2.0
+
+[node name="Button" type="Button" parent="Spiral"]
+layout_mode = 0
+offset_right = 128.0
+offset_bottom = 128.0
+theme_type_variation = &"FlatButton"
+
+[node name="SpiralCross" type="TextureProgressBar" parent="."]
+offset_left = 576.0
+offset_top = 448.0
+offset_right = 704.0
+offset_bottom = 576.0
+scale = Vector2(0.5, 0.5)
+texture_under = ExtResource("9_dairp")
+texture_over = ExtResource("10_rsapa")
+texture_progress = ExtResource("10_rsapa")
+script = ExtResource("4_3a56g")
+Skill = 4
+Cooldown = 5.0
+
+[node name="Button" type="Button" parent="SpiralCross"]
+layout_mode = 0
+offset_right = 128.0
+offset_bottom = 128.0
+theme_type_variation = &"FlatButton"

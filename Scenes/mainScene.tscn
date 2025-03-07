@@ -1,4 +1,4 @@
-[gd_scene load_steps=15 format=4 uid="uid://bcpx8ugq5rrwm"]
+[gd_scene load_steps=16 format=4 uid="uid://bcpx8ugq5rrwm"]
 
 [ext_resource type="Script" path="res://Scripts/MainScene.cs" id="1_4241r"]
 [ext_resource type="PackedScene" uid="uid://dkvqs8cedf5j0" path="res://Prefabs/bullet_manager.tscn" id="2_lu1tw"]
@@ -8,6 +8,7 @@
 [ext_resource type="Script" path="res://Scripts/GameManager.cs" id="6_nl5y0"]
 [ext_resource type="PackedScene" uid="uid://drlc38yydpn5f" path="res://Prefabs/end_game_menu.tscn" id="7_m2u60"]
 [ext_resource type="Texture2D" uid="uid://ba37qcukl3dgk" path="res://Sprites/rooms/2 Dungeon Tileset/1 Tiles/Tileset.png" id="8_s81tu"]
+[ext_resource type="PackedScene" uid="uid://6d0n1as2stmo" path="res://Prefabs/boss_gui.tscn" id="9_y41gq"]
 
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_v3uvx"]
 texture = ExtResource("8_s81tu")
@@ -241,3 +242,7 @@ shape = SubResource("RectangleShape2D_3hkij")
 [node name="CollisionShape2D4" type="CollisionShape2D" parent="Collision"]
 position = Vector2(184, 403)
 shape = SubResource("RectangleShape2D_3hkij")
+
+[node name="BossGui" parent="." instance=ExtResource("9_y41gq")]
+visible = false
+modulate = Color(1, 1, 1, 0.54902)

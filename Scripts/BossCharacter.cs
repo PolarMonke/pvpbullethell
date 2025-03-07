@@ -25,12 +25,12 @@ public partial class BossCharacter : BasicCharacter
 			_patternTimer.Timeout += OnPatternTimerTimeout;
 			_patternTimer.Start();
 
-			// _shootingPatterns.Add(ShootCircle);
-			// _shootingPatterns.Add(ShootCross);
-			// _shootingPatterns.Add(ShootSpiral);
-			// _shootingPatterns.Add(ShootSineWave);
-			// _shootingPatterns.Add(ShootSun);
-			// _shootingPatterns.Add(ShootExplosiveBullets);
+			_shootingPatterns.Add(ShootCircle);
+			_shootingPatterns.Add(ShootCross);
+			_shootingPatterns.Add(ShootSpiral);
+			_shootingPatterns.Add(ShootSineWave);
+			_shootingPatterns.Add(ShootSpiralCross);
+			_shootingPatterns.Add(ShootExplosiveBullets);
         }
     }
 	protected override void HandleShooting()
@@ -44,8 +44,8 @@ public partial class BossCharacter : BasicCharacter
     }
 	private void OnPatternTimerTimeout()
     {
-        _shootingPatterns[_currentPatternIndex]?.Invoke();
-		_currentPatternIndex = new Random().Next(0, _shootingPatterns.Count);
+        // _shootingPatterns[_currentPatternIndex]?.Invoke();
+		// _currentPatternIndex = new Random().Next(0, _shootingPatterns.Count);
     }
 	
 	[Rpc(MultiplayerApi.RpcMode.Authority)]
@@ -62,29 +62,29 @@ public partial class BossCharacter : BasicCharacter
 	}
 
 	[Rpc(MultiplayerApi.RpcMode.AnyPeer, CallLocal = true)]
-    protected void RequestShoot(string type, Vector2 position, Vector2 direction, long id, int speed)
+    protected void RequestShoot(string type, Vector2 position, Vector2 direction, long id, int speed, float lifeTime)
     {
         if (Multiplayer.IsServer())
         {
-            BulletManager.Instance.HandleBulletSpawned(type, position, direction, id, speed);
+            BulletManager.Instance.HandleBulletSpawned(type, position, direction, id, speed, lifeTime);
         }
     }
 	[Rpc(MultiplayerApi.RpcMode.Authority)]
-	private void SpawnBullet(Vector2 direction, string type, int speed)
+	private void SpawnBullet(Vector2 direction, string type, int speed, float lifeTime)
 	{
 		if (GetMultiplayerAuthority() == 1)
 		{
-			RequestShoot("Boss", bulletSpawn.GlobalPosition, direction, GetMultiplayerAuthority(), speed);
+			RequestShoot("Boss", bulletSpawn.GlobalPosition, direction, GetMultiplayerAuthority(), speed, lifeTime);
 		}
 		else
 		{
-			RpcId(1, nameof(RequestShoot), "Boss", bulletSpawn.GlobalPosition, direction, GetMultiplayerAuthority(), speed);
+			RpcId(1, nameof(RequestShoot), "Boss", bulletSpawn.GlobalPosition, direction, GetMultiplayerAuthority(), speed, lifeTime);
 		}
 	}
 
 	#region Shooting Patterns
 
-    private void ShootCircle()
+    public void ShootCircle()
     {
 		SetAnimationState(AnimationState.Attack);
         Rpc(nameof(SyncAnimationState), (int)AnimationState.Attack);
@@ -103,7 +103,7 @@ public partial class BossCharacter : BasicCharacter
         }
     }
 
-	private void ShootCross()
+	public void ShootCross()
 	{
 		SetAnimationState(AnimationState.Attack);
         Rpc(nameof(SyncAnimationState), (int)AnimationState.Attack);
@@ -127,7 +127,7 @@ public partial class BossCharacter : BasicCharacter
 		}
 	}
 
-	private void ShootSpiral()
+	public void ShootSpiral()
 	{
 		SetAnimationState(AnimationState.Attack);
         Rpc(nameof(SyncAnimationState), (int)AnimationState.Attack);
@@ -145,13 +145,13 @@ public partial class BossCharacter : BasicCharacter
 		}
 	}
 
-	private void ShootSun()
+	public void ShootSpiralCross()
 	{
 		SetAnimationState(AnimationState.Attack);
         Rpc(nameof(SyncAnimationState), (int)AnimationState.Attack);
-		RunCoroutine(SunPattern());
+		RunCoroutine(SpiralCrossPattern());
 	}
-	private IEnumerator SunPattern() 
+	private IEnumerator SpiralCrossPattern() 
 	{
 		int bulletCount = 18;
 		int sides = 4;
@@ -168,7 +168,7 @@ public partial class BossCharacter : BasicCharacter
 	}
 
 
-	private void ShootSineWave()
+	public void ShootSineWave()
 	{
 		SetAnimationState(AnimationState.Attack);
         Rpc(nameof(SyncAnimationState), (int)AnimationState.Attack);
@@ -196,7 +196,7 @@ public partial class BossCharacter : BasicCharacter
 		}
 	}	
 
-	private void ShootExplosiveBullets()
+	public void ShootExplosiveBullets()
 	{
 		SetAnimationState(AnimationState.Attack);
         Rpc(nameof(SyncAnimationState), (int)AnimationState.Attack);
@@ -216,35 +216,6 @@ public partial class BossCharacter : BasicCharacter
 	}
 
     #endregion Shooting Patterns
-
-	#region Special Patternss
-
-	private void ShootOrtodoxCross()
-	{
-		SetAnimationState(AnimationState.Attack);
-        Rpc(nameof(SyncAnimationState), (int)AnimationState.Attack);
-		RunCoroutine(OrtodoxCrossPattern());
-	}
-	private IEnumerator OrtodoxCrossPattern()
-	{
-		int rowCount = 8;
-		int sideCount = 4;
-
-		for (int i = 0; i < rowCount; i++)
-		{
-			float angle = 0.0f;
-			for (int j = 0; j < sideCount; j++)
-			{
-				angle = Mathf.DegToRad(j * 90);
-				Vector2 dir = new Vector2(Mathf.Cos(angle), Mathf.Sin(angle));
-				SpawnBullet(dir, "Boss");
-			}	
-			yield return ToSignal(GetTree().CreateTimer(0.1), SceneTreeTimer.SignalName.Timeout);
-		}
-	}
-
-
-	#endregion Special Patterns
 	private async void RunCoroutine(IEnumerator routine)
     {
         while (routine.MoveNext())
