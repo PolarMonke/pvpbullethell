@@ -117,7 +117,7 @@ texture_under = ExtResource("9_dairp")
 texture_progress = ExtResource("10_rsapa")
 script = ExtResource("4_3a56g")
 Skill = 4
-Cooldown = 5.0
+Cooldown = 4.0
 
 [node name="Button" type="Button" parent="SpiralCross"]
 layout_mode = 0

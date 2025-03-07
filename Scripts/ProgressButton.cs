@@ -1,5 +1,6 @@
 using Godot;
 using System;
+using System.Collections;
 public partial class ProgressButton : TextureProgressBar
 {
     public enum Skills
@@ -20,8 +21,14 @@ public partial class ProgressButton : TextureProgressBar
 
     public override void _Ready()
     {
+        RunCoroutine(Spawn());
+    }
+    private IEnumerator Spawn()
+    {
+        yield return ToSignal(GetTree().CreateTimer(0.1), SceneTreeTimer.SignalName.Timeout);
         _button = GetNode<Button>("Button");
-        _bossCharacter = GetNode<BossCharacter>($"/root/MainScene/SpawnManager/{GetMultiplayerAuthority()}");
+
+        _bossCharacter = GetNode<BossCharacter>($"/root/MainScene/SpawnManager/{NetworkingManager.Instance.GetBoss()}");
 
         _button.Connect("pressed", new Callable(this, nameof(OnButtonPressed)));
 
@@ -53,7 +60,15 @@ public partial class ProgressButton : TextureProgressBar
             switch (Skill)
             {
                 case Skills.Circle:
-                    _bossCharacter.ShootCircle();
+                    if (_bossCharacter != null)
+                    {
+                        GD.Print("Shooting circle");
+                        _bossCharacter.ShootCircle();
+                    }
+                    else
+                    {
+                        GD.Print("Boss is null");
+                    }
                     break;
                 case Skills.Bomb:
                     _bossCharacter.ShootExplosiveBullets();
@@ -71,6 +86,16 @@ public partial class ProgressButton : TextureProgressBar
 
             _currentCooldown = 0;
             _button.Disabled = true;
+        }
+    }
+    private async void RunCoroutine(IEnumerator routine)
+    {
+        while (routine.MoveNext())
+        {
+            if (routine.Current is Godot.SignalAwaiter signalAwaiter)
+            {
+                await signalAwaiter;
+            }
         }
     }
 }

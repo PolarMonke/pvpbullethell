@@ -33,6 +33,17 @@ public partial class NetworkingManager : Node
         Multiplayer.PeerDisconnected += OnPeerDisconnected;
     }
     
+    public long GetBoss()
+    {
+        foreach (var kvp in PlayerClasses)
+        {
+            if (kvp.Value == true)
+            {
+                return kvp.Key;
+            }
+        }
+        return 1;
+    }
 
     public void CreateServer()
     {

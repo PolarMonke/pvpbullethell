@@ -11,6 +11,10 @@ public partial class EndGameMenu : Control
 	{
 		_characterMenuScene = GD.Load<PackedScene>("res://Scenes/characterPickMenu.tscn");
 		_mainMenuScene = GD.Load<PackedScene>("res://Scenes/mainScene.tscn");
+		if (_characterMenuScene == null || _mainMenuScene == null)
+		{
+			GD.Print("menu is null");
+		}
 	}
 	public void OnCharacterMenuButtonPressed()
 	{
