@@ -229,7 +229,7 @@ public partial class BossCharacter : BasicCharacter
 
 	public Vector2 GetOtherPlayerPosition()
 	{
-		long playerId = 1;
+		long playerId = GetMultiplayerAuthority();
 		foreach (long val in NetworkingManager.Instance.playerIds)
 		{
 			if (val != GetMultiplayerAuthority())
@@ -238,10 +238,10 @@ public partial class BossCharacter : BasicCharacter
 				break;
 			}
 		}
-		var otherPlayerNode = GetTree().Root.GetNodeOrNull<Node2D>($"/root/MainScene/{playerId}");
+		var otherPlayerNode = GetTree().Root.GetNodeOrNull<Node2D>($"/root/MainScene/SpawnManager/{playerId}");
 		if (otherPlayerNode != null)
 		{
-			return otherPlayerNode.Position;
+			return otherPlayerNode.GlobalPosition;
 		}
 		GD.PrintErr($"Player with ID {playerId} not found!");
 		return Vector2.Zero;

@@ -4,12 +4,12 @@
 [ext_resource type="Script" path="res://Scripts/BossGui.cs" id="1_ls6xc"]
 [ext_resource type="Texture2D" uid="uid://coeelvwuy4mfs" path="res://Sprites/GUI/circle.png" id="2_67sjo"]
 [ext_resource type="Texture2D" uid="uid://cvcoi66qvi4cm" path="res://Sprites/GUI/bomb_bw.png" id="3_8yfga"]
+[ext_resource type="Texture2D" uid="uid://d0brb5gloal8x" path="res://Sprites/GUI/cross.png" id="3_x27yp"]
 [ext_resource type="Script" path="res://Scripts/ProgressButton.cs" id="4_3a56g"]
 [ext_resource type="Texture2D" uid="uid://3h04hng6tsat" path="res://Sprites/GUI/bomb.png" id="4_q2eim"]
 [ext_resource type="Texture2D" uid="uid://gyg8rvn3qju3" path="res://Sprites/GUI/sine_wave_bw.png" id="5_05vs6"]
 [ext_resource type="Texture2D" uid="uid://cwotxuxx63xgx" path="res://Sprites/GUI/sine_wave.png" id="6_meoqs"]
-[ext_resource type="Texture2D" uid="uid://da7a8vhcynv4i" path="res://Sprites/GUI/spiral_bw.png" id="7_k1xc8"]
-[ext_resource type="Texture2D" uid="uid://bkbhwvq0k03a0" path="res://Sprites/GUI/spiral.png" id="8_w16i8"]
+[ext_resource type="Texture2D" uid="uid://caag5gltn62x3" path="res://Sprites/GUI/cross_bw.png" id="9_3py6g"]
 [ext_resource type="Texture2D" uid="uid://fc262dowaj2e" path="res://Sprites/GUI/spiral_cross_bw.png" id="9_dairp"]
 [ext_resource type="Texture2D" uid="uid://co7tqgf1nwyhf" path="res://Sprites/GUI/spiral_cross.png" id="10_rsapa"]
 
@@ -32,6 +32,7 @@ position = Vector2(480, 480)
 shape = SubResource("RectangleShape2D_6nkig")
 
 [node name="Circle" type="TextureProgressBar" parent="."]
+layout_mode = 0
 offset_left = 320.0
 offset_top = 448.0
 offset_right = 448.0
@@ -40,7 +41,7 @@ scale = Vector2(0.5, 0.5)
 texture_under = ExtResource("1_irpno")
 texture_progress = ExtResource("2_67sjo")
 script = ExtResource("4_3a56g")
-Cooldown = 2.0
+Cooldown = 1.0
 
 [node name="Button" type="Button" parent="Circle"]
 layout_mode = 0
@@ -59,7 +60,7 @@ texture_under = ExtResource("3_8yfga")
 texture_progress = ExtResource("4_q2eim")
 script = ExtResource("4_3a56g")
 Skill = 1
-Cooldown = 6.0
+Cooldown = 5.0
 
 [node name="Button" type="Button" parent="Bomb"]
 layout_mode = 0
@@ -68,6 +69,7 @@ offset_bottom = 128.0
 theme_type_variation = &"FlatButton"
 
 [node name="SineWave" type="TextureProgressBar" parent="."]
+layout_mode = 0
 offset_left = 448.0
 offset_top = 448.0
 offset_right = 576.0
@@ -77,7 +79,7 @@ texture_under = ExtResource("5_05vs6")
 texture_progress = ExtResource("6_meoqs")
 script = ExtResource("4_3a56g")
 Skill = 2
-Cooldown = 3.0
+Cooldown = 2.0
 
 [node name="Button" type="Button" parent="SineWave"]
 layout_mode = 0
@@ -85,25 +87,27 @@ offset_right = 128.0
 offset_bottom = 128.0
 theme_type_variation = &"FlatButton"
 
-[node name="Spiral" type="TextureProgressBar" parent="."]
+[node name="Cross" type="TextureProgressBar" parent="."]
+layout_mode = 0
 offset_left = 512.0
 offset_top = 448.0
 offset_right = 640.0
 offset_bottom = 576.0
 scale = Vector2(0.5, 0.5)
-texture_under = ExtResource("7_k1xc8")
-texture_progress = ExtResource("8_w16i8")
+texture_under = ExtResource("9_3py6g")
+texture_progress = ExtResource("3_x27yp")
 script = ExtResource("4_3a56g")
 Skill = 3
 Cooldown = 2.0
 
-[node name="Button" type="Button" parent="Spiral"]
+[node name="Button" type="Button" parent="Cross"]
 layout_mode = 0
 offset_right = 128.0
 offset_bottom = 128.0
 theme_type_variation = &"FlatButton"
 
 [node name="SpiralCross" type="TextureProgressBar" parent="."]
+layout_mode = 0
 offset_left = 576.0
 offset_top = 448.0
 offset_right = 704.0

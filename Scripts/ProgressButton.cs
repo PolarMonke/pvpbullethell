@@ -7,7 +7,7 @@ public partial class ProgressButton : TextureProgressBar
         Circle,
         Bomb,
         SineWave,
-        Spiral,
+        Cross,
         SpiralCross
     }
 
@@ -61,8 +61,8 @@ public partial class ProgressButton : TextureProgressBar
                 case Skills.SineWave:
                     _bossCharacter.ShootSineWave();
                     break;
-                case Skills.Spiral:
-                    _bossCharacter.ShootSpiral();
+                case Skills.Cross:
+                    _bossCharacter.ShootCross();
                     break;
                 case Skills.SpiralCross:
                     _bossCharacter.ShootSpiralCross();
