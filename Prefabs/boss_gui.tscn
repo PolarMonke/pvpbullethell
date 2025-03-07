@@ -1,4 +1,4 @@
-[gd_scene load_steps=13 format=3 uid="uid://6d0n1as2stmo"]
+[gd_scene load_steps=14 format=3 uid="uid://6d0n1as2stmo"]
 
 [ext_resource type="Texture2D" uid="uid://b7xlm2aoq35qw" path="res://Sprites/GUI/circle_bw.png" id="1_irpno"]
 [ext_resource type="Script" path="res://Scripts/BossGui.cs" id="1_ls6xc"]
@@ -13,6 +13,9 @@
 [ext_resource type="Texture2D" uid="uid://fc262dowaj2e" path="res://Sprites/GUI/spiral_cross_bw.png" id="9_dairp"]
 [ext_resource type="Texture2D" uid="uid://co7tqgf1nwyhf" path="res://Sprites/GUI/spiral_cross.png" id="10_rsapa"]
 
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_6nkig"]
+size = Vector2(320, 64)
+
 [node name="BossGui" type="Control"]
 layout_mode = 3
 anchors_preset = 15
@@ -22,6 +25,12 @@ grow_horizontal = 2
 grow_vertical = 2
 script = ExtResource("1_ls6xc")
 
+[node name="Area2D" type="Area2D" parent="."]
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Area2D"]
+position = Vector2(480, 480)
+shape = SubResource("RectangleShape2D_6nkig")
+
 [node name="Circle" type="TextureProgressBar" parent="."]
 offset_left = 320.0
 offset_top = 448.0
@@ -29,7 +38,6 @@ offset_right = 448.0
 offset_bottom = 576.0
 scale = Vector2(0.5, 0.5)
 texture_under = ExtResource("1_irpno")
-texture_over = ExtResource("2_67sjo")
 texture_progress = ExtResource("2_67sjo")
 script = ExtResource("4_3a56g")
 Cooldown = 2.0
@@ -48,7 +56,6 @@ offset_right = 512.0
 offset_bottom = 576.0
 scale = Vector2(0.5, 0.5)
 texture_under = ExtResource("3_8yfga")
-texture_over = ExtResource("4_q2eim")
 texture_progress = ExtResource("4_q2eim")
 script = ExtResource("4_3a56g")
 Skill = 1
@@ -67,7 +74,6 @@ offset_right = 576.0
 offset_bottom = 576.0
 scale = Vector2(0.5, 0.5)
 texture_under = ExtResource("5_05vs6")
-texture_over = ExtResource("6_meoqs")
 texture_progress = ExtResource("6_meoqs")
 script = ExtResource("4_3a56g")
 Skill = 2
@@ -86,7 +92,6 @@ offset_right = 640.0
 offset_bottom = 576.0
 scale = Vector2(0.5, 0.5)
 texture_under = ExtResource("7_k1xc8")
-texture_over = ExtResource("8_w16i8")
 texture_progress = ExtResource("8_w16i8")
 script = ExtResource("4_3a56g")
 Skill = 3
@@ -105,7 +110,6 @@ offset_right = 704.0
 offset_bottom = 576.0
 scale = Vector2(0.5, 0.5)
 texture_under = ExtResource("9_dairp")
-texture_over = ExtResource("10_rsapa")
 texture_progress = ExtResource("10_rsapa")
 script = ExtResource("4_3a56g")
 Skill = 4

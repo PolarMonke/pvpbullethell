@@ -16,7 +16,7 @@ public partial class ProgressButton : TextureProgressBar
 
     private BossCharacter _bossCharacter;
     private Button _button;
-    private float _remainingCooldown = 0.0f;
+    private float _currentCooldown = 0.0f;
 
     public override void _Ready()
     {
@@ -27,17 +27,18 @@ public partial class ProgressButton : TextureProgressBar
 
         MaxValue = Cooldown;
         Value = Cooldown;
+        _currentCooldown = Cooldown;
     }
 
     public override void _Process(double delta)
     {
-        if (_remainingCooldown > 0)
+        if (_currentCooldown < Cooldown)
         {
-            _remainingCooldown -= (float)delta;
+            _currentCooldown += (float)delta;
 
-            Value = _remainingCooldown;
+            Value = _currentCooldown;
 
-            if (_remainingCooldown <= 0)
+            if (_currentCooldown >= Cooldown)
             {
                 _button.Disabled = false;
                 Value = Cooldown;
@@ -47,7 +48,7 @@ public partial class ProgressButton : TextureProgressBar
 
     private void OnButtonPressed()
     {
-        if (_remainingCooldown <= 0 && _bossCharacter != null)
+        if (_currentCooldown >= Cooldown && _bossCharacter != null)
         {
             switch (Skill)
             {
@@ -68,7 +69,7 @@ public partial class ProgressButton : TextureProgressBar
                     break;
             }
 
-            _remainingCooldown = Cooldown;
+            _currentCooldown = 0;
             _button.Disabled = true;
         }
     }
