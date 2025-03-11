@@ -6,7 +6,7 @@
 [ext_resource type="PackedScene" uid="uid://d2yi4qakdybi7" path="res://Prefabs/Characters/hero_character.tscn" id="3_d7k4p"]
 [ext_resource type="PackedScene" uid="uid://d03i2hjl2p5lb" path="res://Prefabs/Characters/boss_character.tscn" id="4_d5a8v"]
 [ext_resource type="Script" path="res://Scripts/GameManager.cs" id="6_nl5y0"]
-[ext_resource type="PackedScene" uid="uid://drlc38yydpn5f" path="res://Prefabs/end_game_menu.tscn" id="7_m2u60"]
+[ext_resource type="PackedScene" uid="uid://dosmeqpawuyqh" path="res://Scenes/game_over_menu.tscn" id="8_jaqtx"]
 [ext_resource type="Texture2D" uid="uid://ba37qcukl3dgk" path="res://Sprites/rooms/2 Dungeon Tileset/1 Tiles/Tileset.png" id="8_s81tu"]
 [ext_resource type="PackedScene" uid="uid://6d0n1as2stmo" path="res://Prefabs/boss_gui.tscn" id="9_y41gq"]
 
@@ -220,7 +220,7 @@ spawn_path = NodePath("..")
 [node name="GameManager" type="Node2D" parent="."]
 position = Vector2(480, 264)
 script = ExtResource("6_nl5y0")
-_gameOverScreen = ExtResource("7_m2u60")
+_gameOverScreen = ExtResource("8_jaqtx")
 
 [node name="Collision" type="StaticBody2D" parent="."]
 
@@ -245,3 +245,7 @@ shape = SubResource("RectangleShape2D_3hkij")
 
 [node name="BossGui" parent="." instance=ExtResource("9_y41gq")]
 visible = false
+
+[node name="AudioManager" type="Node2D" parent="."]
+
+[node name="AudioStreamPlayer" type="AudioStreamPlayer" parent="AudioManager"]

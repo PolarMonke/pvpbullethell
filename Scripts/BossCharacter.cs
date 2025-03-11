@@ -66,6 +66,7 @@ public partial class BossCharacter : BasicCharacter
     {
         if (Multiplayer.IsServer())
         {
+			audioPlayer.Play();
             BulletManager.Instance.HandleBulletSpawned(type, position, direction, id, speed, lifeTime);
         }
     }

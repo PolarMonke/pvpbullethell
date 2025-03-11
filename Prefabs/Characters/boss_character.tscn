@@ -2,12 +2,12 @@
 
 [ext_resource type="Texture2D" uid="uid://cxl7feiqu7p3g" path="res://Sprites/boss/Wanderer Magican/Attack_1.png" id="1_4c48n"]
 [ext_resource type="Script" path="res://Scripts/BossCharacter.cs" id="1_8ttk8"]
-[ext_resource type="PackedScene" uid="uid://jfiaejdbqonp" path="res://Prefabs/Bullets/boss_bullet.tscn" id="2_mphmq"]
 [ext_resource type="Texture2D" uid="uid://h3rkqyxqh2m5" path="res://Sprites/boss/Wanderer Magican/Dead.png" id="2_susch"]
 [ext_resource type="Texture2D" uid="uid://bd8lw1qvvhskh" path="res://Sprites/boss/Wanderer Magican/Hurt.png" id="3_60755"]
 [ext_resource type="Texture2D" uid="uid://d4hn4dnqclssa" path="res://Sprites/boss/Wanderer Magican/Idle.png" id="4_roiv3"]
 [ext_resource type="Texture2D" uid="uid://b05q8jtus6nnq" path="res://Sprites/boss/Wanderer Magican/Run.png" id="5_d4ks7"]
 [ext_resource type="Texture2D" uid="uid://ctdfd0kiovydi" path="res://Sprites/boss/Wanderer Magican/Walk.png" id="6_v623p"]
+[ext_resource type="AudioStream" uid="uid://h2gitvp0s3tv" path="res://Sounds/magic_shot.mp3" id="8_qly4c"]
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_5ribj"]
 atlas = ExtResource("1_4c48n")
@@ -327,7 +327,6 @@ script = ExtResource("1_8ttk8")
 MaxHealth = 1000
 Health = 1000
 healthBar = NodePath("HealthBar")
-bulletScene = ExtResource("2_mphmq")
 bulletSpawn = NodePath("AnimatedSprite2D/BulletSpawn")
 bulletCooldownNode = NodePath("BulletCooldownNode")
 animatedSprite = NodePath("AnimatedSprite2D")
@@ -365,3 +364,7 @@ show_percentage = false
 [node name="Hitbox" type="CollisionShape2D" parent="HitboxArea"]
 position = Vector2(-3, 32)
 shape = SubResource("RectangleShape2D_tg483")
+
+[node name="AudioStreamPlayer2D" type="AudioStreamPlayer2D" parent="."]
+stream = ExtResource("8_qly4c")
+parameters/looping = true

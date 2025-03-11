@@ -13,6 +13,7 @@ public partial class BasicCharacter : CharacterBody2D
     protected bool _isDead = false;
 
     [Export] protected ProgressBar healthBar;
+    [Export] protected AudioStreamPlayer2D audioPlayer;
     [Export] protected Marker2D bulletSpawn;
     [Export] protected Timer bulletCooldownNode;
     [Export] protected float bulletCooldown = 0.3f;
@@ -48,6 +49,8 @@ public partial class BasicCharacter : CharacterBody2D
             _hitbox = GetNode<Area2D>("HitboxArea");
             _hitbox.Connect("area_entered", Callable.From((Area2D area) => OnHitboxAreaEntered(area)));
             this.Connect(nameof(HitboxHit), Callable.From((int damage) => TakeDamage(damage)));
+
+            audioPlayer = GetNode<AudioStreamPlayer2D>("AudioStreamPlayer2D");
 
             GD.Print($"Player {Name} entered tree with authority: {IsMultiplayerAuthority()}");
         }
@@ -193,6 +196,7 @@ public partial class BasicCharacter : CharacterBody2D
     {
         if (Multiplayer.IsServer())
         {
+            audioPlayer.Play();
             BulletManager.Instance.HandleBulletSpawned(type, position, direction, id);
         }
     }

@@ -3,11 +3,11 @@
 [ext_resource type="Script" path="res://Scripts/HeroCharacter.cs" id="1_x03yp"]
 [ext_resource type="Texture2D" uid="uid://cgjhrx5wi3je1" path="res://Sprites/hero/Countess_Vampire/Attack_1.png" id="2_e1dd1"]
 [ext_resource type="Texture2D" uid="uid://tsqwic8ki7jv" path="res://Sprites/hero/Countess_Vampire/Walk.png" id="2_mjj5v"]
-[ext_resource type="PackedScene" uid="uid://dh2uvcnuxnr2v" path="res://Prefabs/Bullets/bullet.tscn" id="2_n0dm5"]
 [ext_resource type="Texture2D" uid="uid://c1lwqvfjmmod7" path="res://Sprites/hero/Countess_Vampire/Idle.png" id="2_wxstl"]
 [ext_resource type="Texture2D" uid="uid://b6tpbou5qycrs" path="res://Sprites/hero/Countess_Vampire/Dead.png" id="3_ltlbt"]
 [ext_resource type="Texture2D" uid="uid://bsov50epkkmu4" path="res://Sprites/hero/Countess_Vampire/Run.png" id="4_3sxru"]
 [ext_resource type="Texture2D" uid="uid://bswkrj8d5nllg" path="res://Sprites/hero/Countess_Vampire/Hurt.png" id="4_wfi0l"]
+[ext_resource type="AudioStream" uid="uid://7wnsg1dxmfv5" path="res://Sounds/shot.mp3" id="9_5j7ar"]
 [ext_resource type="Texture2D" uid="uid://6gufgbnicet7" path="res://Sprites/bullets/Bullet.png" id="9_n8a8q"]
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_8pvhe"]
@@ -309,7 +309,6 @@ radius = 5.92066
 [node name="HeroCharacter" type="CharacterBody2D" node_paths=PackedStringArray("healthBar", "bulletSpawn", "bulletCooldownNode", "animatedSprite")]
 script = ExtResource("1_x03yp")
 healthBar = NodePath("HealthBar")
-bulletScene = ExtResource("2_n0dm5")
 bulletSpawn = NodePath("AnimatedSprite2D/BulletSpawn")
 bulletCooldownNode = NodePath("BulletCooldownNode")
 animatedSprite = NodePath("AnimatedSprite2D")
@@ -352,3 +351,6 @@ debug_color = Color(1, 0.270588, 0.756863, 0.482353)
 position = Vector2(4.02331e-07, -7.15256e-07)
 scale = Vector2(0.724048, 0.728469)
 texture = ExtResource("9_n8a8q")
+
+[node name="AudioStreamPlayer2D" type="AudioStreamPlayer2D" parent="."]
+stream = ExtResource("9_5j7ar")

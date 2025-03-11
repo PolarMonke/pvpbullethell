@@ -1,3 +1,4 @@
+using System.Collections;
 using System.Xml.Serialization;
 using Godot;
 
@@ -6,6 +7,7 @@ public partial class GameManager : Node
     public static GameManager Instance { get; private set; }
     [Export] PackedScene _gameOverScreen;
     private bool _lost = false;
+    private bool _endGameScreenShown = false;
     public override void _EnterTree()
     {
         if (Instance != null)
@@ -29,9 +31,14 @@ public partial class GameManager : Node
         Rpc(nameof(ShowEndGameScreen));
     }
 
-    [Rpc(MultiplayerApi.RpcMode.AnyPeer, CallLocal = true)]
+    [Rpc(MultiplayerApi.RpcMode.AnyPeer)] //, CallLocal = true
     private void ShowEndGameScreen()
     {
+        if (_endGameScreenShown)
+        {
+            return;
+        }
+        _endGameScreenShown = true;
         var endGameInstance = _gameOverScreen.Instantiate();
         if (endGameInstance.GetNode("Panel").GetNode("Label") is Label label)
         {
