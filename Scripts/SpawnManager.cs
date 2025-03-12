@@ -6,15 +6,14 @@ using System.Linq;
 
 public partial class SpawnManager : Node2D
 {
-	public static SpawnManager Instance { get; private set; }
+    public static SpawnManager Instance { get; private set; }
     [Export] private PackedScene heroScene;
     [Export] private PackedScene bossScene;
     [Export] private PackedScene bossGUIScene;
     private bool _playerClassSwitch;
     public Dictionary<long, Node2D> playerNodes = new Dictionary<long, Node2D>();
-    
 
-	public override void _Ready()
+    public override void _Ready()
     {
         if (Instance != null)
         {
@@ -40,13 +39,13 @@ public partial class SpawnManager : Node2D
     {
         if (playerNodes.ContainsKey(id)) return;
 
-        Node2D player = isBoss ? bossScene.Instantiate<Node2D>() : heroScene.Instantiate<Node2D>(); 
+        Node2D player = isBoss ? bossScene.Instantiate<Node2D>() : heroScene.Instantiate<Node2D>();
         player.Name = id.ToString();
         player.Position = isBoss ? new Vector2(200, 0) : new Vector2(-200, 0);
-        
+
         AddChild(player);
         playerNodes[id] = player;
-        
+
         GD.Print($"Player {id} spawned as {(isBoss ? "Boss" : "Hero")}");
     }
 
@@ -60,6 +59,12 @@ public partial class SpawnManager : Node2D
         GD.Print($"Peer connected: {id}");
         if (Multiplayer.IsServer())
         {
+            // Ensure host spawns first
+            if (!playerNodes.ContainsKey(Multiplayer.GetUniqueId()))
+            {
+                _createPlayer(Multiplayer.GetUniqueId());
+            }
+
             foreach (long playerId in NetworkingManager.Instance.playerIds)
             {
                 if (playerId != id)
@@ -68,19 +73,17 @@ public partial class SpawnManager : Node2D
                     RpcId(id, nameof(_SyncPlayerPosition), playerId, playerNodes[playerId].Position);
                 }
             }
-           
+
             _createPlayer(id);
         }
         else
         {
-           _createPlayer(Multiplayer.GetUniqueId());
+            _createPlayer(Multiplayer.GetUniqueId());
         }
     }
 
     private void _addPlayer(long id)
     {
-        //if (playerNodes.ContainsKey(id)) { return; }
-
         GD.Print($"_addPlayer called, id = {id}, Server = {Multiplayer.IsServer()}");
 
         Node2D player = _playerClassSwitch ? bossScene.Instantiate() as Node2D : heroScene.Instantiate() as Node2D;
@@ -98,6 +101,7 @@ public partial class SpawnManager : Node2D
 
         GD.Print($"Player node created with name: {player.Name}, path: {player.GetPath()}");
     }
+
     [Rpc(MultiplayerApi.RpcMode.AnyPeer)]
     private void _createPlayer(long id)
     {
@@ -108,6 +112,7 @@ public partial class SpawnManager : Node2D
         }
         _addPlayer(id);
     }
+
     [Rpc(MultiplayerApi.RpcMode.AnyPeer)]
     public void _SyncPlayerPosition(long playerId, Vector2 position)
     {
@@ -117,5 +122,4 @@ public partial class SpawnManager : Node2D
             playerNodes[playerId].Position = position;
         }
     }
-
 }
