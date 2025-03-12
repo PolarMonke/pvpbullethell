@@ -324,6 +324,7 @@ size = Vector2(26, 64)
 
 [node name="BossCharacter" type="CharacterBody2D" node_paths=PackedStringArray("healthBar", "bulletSpawn", "bulletCooldownNode", "animatedSprite")]
 script = ExtResource("1_8ttk8")
+_speed = 50.0
 MaxHealth = 1000
 Health = 1000
 healthBar = NodePath("HealthBar")
@@ -367,4 +368,5 @@ shape = SubResource("RectangleShape2D_tg483")
 
 [node name="AudioStreamPlayer2D" type="AudioStreamPlayer2D" parent="."]
 stream = ExtResource("8_qly4c")
-parameters/looping = true
+volume_db = -5.104
+pitch_scale = 1.76
