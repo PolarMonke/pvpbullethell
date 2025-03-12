@@ -8,7 +8,6 @@ using System.Collections;
 public partial class BossCharacter : BasicCharacter
 {
 	[Export] public float PatternCooldown = 1.5f;
-    private Timer _patternTimer;
     private List<Action> _shootingPatterns = new List<Action>();
     private int _currentPatternIndex = 0;
 
@@ -18,13 +17,6 @@ public partial class BossCharacter : BasicCharacter
 		base._EnterTree();
         if (Name != null)
         {
-			_patternTimer = new Timer();
-			_patternTimer.WaitTime = PatternCooldown;
-			_patternTimer.OneShot = false;
-			AddChild(_patternTimer);
-			_patternTimer.Timeout += OnPatternTimerTimeout;
-			_patternTimer.Start();
-
 			_shootingPatterns.Add(ShootCircle);
 			_shootingPatterns.Add(ShootCross);
 			_shootingPatterns.Add(ShootSpiral);
@@ -33,20 +25,7 @@ public partial class BossCharacter : BasicCharacter
 			_shootingPatterns.Add(ShootExplosiveBullets);
         }
     }
-	protected override void HandleShooting()
-    {
-        // if (Input.IsActionPressed("shoot") && bulletCooldownNode.IsStopped() && IsMultiplayerAuthority())
-        // {
-        //     bulletCooldownNode.Start(bulletCooldown);
-        //     Shoot();
-        // }
-		// TODO: Implement some kind of abilities
-    }
-	private void OnPatternTimerTimeout()
-    {
-        // _shootingPatterns[_currentPatternIndex]?.Invoke();
-		// _currentPatternIndex = new Random().Next(0, _shootingPatterns.Count);
-    }
+
 	
 	[Rpc(MultiplayerApi.RpcMode.Authority)]
 	private void SpawnBullet(Vector2 direction, string type)

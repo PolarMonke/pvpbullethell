@@ -39,7 +39,9 @@ public partial class GameManager : Node
             return;
         }
         _endGameScreenShown = true;
-        var endGameInstance = _gameOverScreen.Instantiate();
+
+        var endGameInstance = GetNode<Control>("/root/MainScene/GameOverMenu");
+        endGameInstance.Visible = true;
         if (endGameInstance.GetNode("Panel").GetNode("Label") is Label label)
         {
             if (_lost)
@@ -51,7 +53,7 @@ public partial class GameManager : Node
                 label.Text = "You won!";
             }
         }
-        GetTree().Root.AddChild(endGameInstance);
+        var mainScene = GetTree().Root.GetNode<Node>("MainScene");
         GetTree().Paused = true;
     }
 }

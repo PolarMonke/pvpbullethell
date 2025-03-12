@@ -36,6 +36,7 @@ public partial class BasicCharacter : CharacterBody2D
     {
         if (Name != null)
         {
+            AddToGroup("MultiplayerDependent");
             animatedSprite.Animation = "Idle";
             animatedSprite.Play();
             SetMultiplayerAuthority(Int32.Parse(Name));
@@ -172,6 +173,10 @@ public partial class BasicCharacter : CharacterBody2D
         {
             bulletCooldownNode.Start(bulletCooldown);
             Shoot();
+        }
+        if (Input.IsActionPressed("die"))
+        {
+            Die();
         }
     }
 

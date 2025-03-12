@@ -29,8 +29,6 @@ public partial class NetworkingManager : Node
             Instance = this;
         }
 
-        Multiplayer.PeerConnected += OnPeerConnected;
-        Multiplayer.PeerDisconnected += OnPeerDisconnected;
     }
     
     public long GetBoss()
@@ -48,6 +46,9 @@ public partial class NetworkingManager : Node
     public void CreateServer()
     {
         GD.Print("Starting server");
+        Multiplayer.PeerConnected += OnPeerConnected;
+        Multiplayer.PeerDisconnected += OnPeerDisconnected;
+
         _peer.CreateServer(_port);
         Multiplayer.MultiplayerPeer = _peer;
         _addPlayerID(Multiplayer.GetUniqueId());
@@ -57,6 +58,10 @@ public partial class NetworkingManager : Node
     public void JoinServer(string address)
     {
         GD.Print("Attempting to connect to " + address);
+
+        Multiplayer.PeerConnected += OnPeerConnected;
+        Multiplayer.PeerDisconnected += OnPeerDisconnected;
+
         _peer.CreateClient(address, _port);
         Multiplayer.MultiplayerPeer = _peer;
         GD.Print("Client connecting to " + address);
@@ -64,21 +69,55 @@ public partial class NetworkingManager : Node
 
     public void LeaveServer()
     {
+        GD.Print("Leaving server...");
+
         if (Multiplayer.IsServer())
         {
-            _peer.Close();
             GD.Print("Server closed");
         }
         else
         {
-            _peer.Close();
             GD.Print("Client disconnected from server");
         }
+
+        _peer.Close();
+        GD.Print("Peer connection closed");
+
         playerIds.Clear();
         PlayerClasses.Clear();
-        SpawnManager.Instance.playerNodes.Clear();
+        GD.Print("Player lists cleared");
 
+        if (SpawnManager.Instance != null)
+        {
+            foreach (var playerNode in SpawnManager.Instance.playerNodes.Values)
+            {
+                playerNode.QueueFree();
+            }
+            SpawnManager.Instance.playerNodes.Clear();
+            GD.Print("Player nodes cleared");
+        }
         Multiplayer.MultiplayerPeer = null;
+        GD.Print("Multiplayer peer reset");
+
+        Multiplayer.PeerConnected -= OnPeerConnected;
+        Multiplayer.PeerDisconnected -= OnPeerDisconnected;
+        GD.Print("Multiplayer signals disconnected");
+
+        PauseMultiplayerDependentNodes();
+    }
+
+    private void PauseMultiplayerDependentNodes()
+    {
+        var multiplayerNodes = GetTree().GetNodesInGroup("MultiplayerDependent");
+        foreach (var node in multiplayerNodes)
+        {
+            if (node is Node2D node2D)
+            {
+                node2D.SetProcess(false);
+                node2D.SetPhysicsProcess(false);
+            }
+        }
+        GD.Print("Paused multiplayer-dependent nodes");
     }
     private void OnPeerConnected(long id)
     {

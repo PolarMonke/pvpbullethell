@@ -324,7 +324,7 @@ size = Vector2(26, 64)
 
 [node name="BossCharacter" type="CharacterBody2D" node_paths=PackedStringArray("healthBar", "bulletSpawn", "bulletCooldownNode", "animatedSprite")]
 script = ExtResource("1_8ttk8")
-_speed = 50.0
+_speed = 100.0
 MaxHealth = 1000
 Health = 1000
 healthBar = NodePath("HealthBar")

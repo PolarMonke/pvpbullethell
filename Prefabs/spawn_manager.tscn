@@ -1,0 +1,11 @@
+[gd_scene load_steps=4 format=3 uid="uid://dcd5f18eccg3p"]
+
+[ext_resource type="Script" path="res://Scripts/SpawnManager.cs" id="1_emebm"]
+[ext_resource type="PackedScene" uid="uid://d2yi4qakdybi7" path="res://Prefabs/Characters/hero_character.tscn" id="2_sxs2e"]
+[ext_resource type="PackedScene" uid="uid://d03i2hjl2p5lb" path="res://Prefabs/Characters/boss_character.tscn" id="3_k8ccl"]
+
+[node name="SpawnManager" type="Node2D" groups=["MultiplayerDependent"]]
+position = Vector2(477, 270)
+script = ExtResource("1_emebm")
+heroScene = ExtResource("2_sxs2e")
+bossScene = ExtResource("3_k8ccl")
