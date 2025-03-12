@@ -1,0 +1,28 @@
+[gd_scene load_steps=3 format=3 uid="uid://r0of5tpr7mnx"]
+
+[ext_resource type="Texture2D" uid="uid://ltqtpa538knc" path="res://Sprites/controls.png" id="1_6odeq"]
+[ext_resource type="Script" path="res://Scripts/Menus/ControlsInfo.cs" id="1_52ebd"]
+
+[node name="ControlsInfo" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_52ebd")
+
+[node name="Sprite2D" type="Sprite2D" parent="."]
+position = Vector2(489, 269)
+scale = Vector2(0.380729, 0.439522)
+texture = ExtResource("1_6odeq")
+
+[node name="Button" type="Button" parent="."]
+layout_mode = 0
+offset_left = 124.0
+offset_top = 112.0
+offset_right = 854.0
+offset_bottom = 424.0
+flat = true
+
+[connection signal="pressed" from="Button" to="." method="_on_button_pressed"]

@@ -1,7 +1,10 @@
-[gd_scene load_steps=3 format=3 uid="uid://dnei4kchi6hqc"]
+[gd_scene load_steps=6 format=3 uid="uid://dnei4kchi6hqc"]
 
 [ext_resource type="Script" path="res://Scripts/Menus/MainMenu.cs" id="1_3o5sa"]
 [ext_resource type="PackedScene" uid="uid://b1i2pn1pdu3bo" path="res://Scenes/characterPickMenu.tscn" id="2_x8fly"]
+[ext_resource type="Texture2D" uid="uid://d1d074bxpi8h5" path="res://Sprites/info.png" id="3_de6cl"]
+[ext_resource type="PackedScene" uid="uid://r0of5tpr7mnx" path="res://Prefabs/controls_info.tscn" id="4_anpdt"]
+[ext_resource type="Script" path="res://Scripts/Menus/ControlsInfo.cs" id="5_mg0ay"]
 
 [node name="MainMenu" type="Control"]
 layout_mode = 3
@@ -47,5 +50,18 @@ grow_horizontal = 2
 grow_vertical = 2
 text = "HOST"
 
+[node name="InfoButton" type="Button" parent="."]
+layout_mode = 0
+offset_right = 520.0
+offset_bottom = 520.0
+scale = Vector2(0.1, 0.1)
+icon = ExtResource("3_de6cl")
+
+[node name="ControlsInfo" parent="." instance=ExtResource("4_anpdt")]
+visible = false
+layout_mode = 1
+script = ExtResource("5_mg0ay")
+
 [connection signal="pressed" from="JoinButton" to="." method="_OnJoinButtonPressed"]
 [connection signal="pressed" from="HostButton" to="." method="_OnHostButtonPressed"]
+[connection signal="pressed" from="InfoButton" to="." method="_OnInfoButtonPressed"]

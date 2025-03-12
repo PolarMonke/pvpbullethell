@@ -15,4 +15,9 @@ public partial class MainMenu : Control
         NetworkingManager.Instance.JoinServer("localhost");
         GetTree().ChangeSceneToPacked(_nextScene);
     }
+
+    public void _OnInfoButtonPressed()
+    {
+        GetNode<Control>($"/root/MainMenu/ControlsInfo").Visible = true;
+    }
 }
